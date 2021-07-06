@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.effect.InnerShadow?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="520.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controller.loginController">
+    <left>
+        <AnchorPane prefHeight="407.0" prefWidth="228.0" style="-fx-background-color: #263F73;" BorderPane.alignment="CENTER">
+            <children>
+                <Label alignment="CENTER" layoutX="8.0" layoutY="136.0" prefHeight="18.0" prefWidth="206.0" text="Library" textFill="#f4f1f1">
+                    <font>
+                        <Font name="Verdana Bold" size="24.0" />
+                    </font>
+                    <effect>
+                        <DropShadow />
+                    </effect>
+                </Label>
+                <Label alignment="CENTER" layoutX="8.0" layoutY="169.0" prefHeight="18.0" prefWidth="206.0" text="managment" textFill="#f4f1f1">
+                    <font>
+                        <Font name="Verdana Bold" size="22.0" />
+                    </font>
+                    <effect>
+                        <DropShadow />
+                    </effect>
+                </Label>
+                <Label alignment="CENTER" layoutX="8.0" layoutY="200.0" prefHeight="18.0" prefWidth="206.0" text="system" textFill="#f4f1f1">
+                    <font>
+                        <Font name="Verdana Bold" size="20.0" />
+                    </font>
+                    <effect>
+                        <DropShadow />
+                    </effect>
+                </Label>
+                <Line endX="77.80000305175781" endY="-1.52587890625E-5" layoutX="114.0" layoutY="166.0" startX="-74.19999694824219" startY="-1.52587890625E-5" stroke="WHITE" strokeWidth="2.0">
+                    <effect>
+                        <DropShadow />
+                    </effect>
+                </Line>
+                <Line endX="75.00001525878906" endY="-1.52587890625E-5" layoutX="116.0" layoutY="200.0" startX="-75.40000915527344" startY="-1.52587890625E-5" stroke="WHITE" strokeWidth="2.0">
+                    <effect>
+                        <DropShadow />
+                    </effect>
+                </Line>
+                <Circle fill="TRANSPARENT" layoutX="114.0" layoutY="190.0" radius="100.0" stroke="#848181" strokeType="INSIDE" />
+            </children>
+        </AnchorPane>
+    </left>
+    <right>
+        <AnchorPane prefHeight="400.0" prefWidth="332.0" BorderPane.alignment="CENTER">
+            <children>
+                <Label alignment="CENTER" layoutX="14.0" layoutY="127.0" prefHeight="18.0" prefWidth="83.0" text="Admin" />
+                <Label alignment="CENTER" layoutX="14.0" layoutY="166.0" prefHeight="18.0" prefWidth="83.0" text="Password" />
+                <TextField fx:id="usernameTextField" layoutX="97.0" layoutY="124.0" prefHeight="26.0" prefWidth="162.0" />
+                <PasswordField fx:id="passwordPasswordField" layoutX="97.0" layoutY="163.0" prefHeight="26.0" prefWidth="162.0" />
+                <Button fx:id="loginButton" layoutX="30.0" layoutY="243.0" mnemonicParsing="false" onAction="#loginButtonOnAction" prefHeight="26.0" prefWidth="229.0" style="-fx-background-color: #263F73;" text="Login" textFill="WHITE">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Button>
+                <Button fx:id="cancelButton" layoutX="30.0" layoutY="284.0" mnemonicParsing="false" onAction="#cancelButtonOnAction" prefHeight="26.0" prefWidth="229.0" style="-fx-background-color: #263F73;" text="Cancel" textFill="WHITE">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Button>
+                <Label alignment="CENTER" layoutX="59.0" layoutY="62.0" prefHeight="18.0" prefWidth="178.0" text="Secure Login">
+                    <font>
+                        <Font name="Arial" size="13.0" />
+                    </font>
+                    <effect>
+                        <InnerShadow />
+                    </effect>
+                </Label>
+                <Label fx:id="loginMessageLabel" alignment="CENTER" layoutX="30.0" layoutY="92.0" prefHeight="18.0" prefWidth="229.0" textFill="RED">
+                    <font>
+                        <Font size="13.0" />
+                    </font>
+                </Label>
+            </children>
+        </AnchorPane>
+    </right>
+</BorderPane>
