@@ -17,9 +17,8 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("views/login.fxml"));
         primaryStage.initStyle(StageStyle.UNDECORATED);
-        //primaryStage.setTitle("Library Managment System");
-        primaryStage.setScene(new Scene(root, 520, 400));
+        primaryStage.getIcons().add(new Image("https://static.thenounproject.com/png/3314579-200.png"));
+        primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
-
 }

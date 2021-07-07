@@ -8,6 +8,7 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.Glow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -17,34 +18,41 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<StackPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="898.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controllers.MainController">
     <children>
-        <BorderPane prefHeight="200.0" prefWidth="200.0">
+        <BorderPane prefHeight="565.0" prefWidth="778.0" styleClass="borderPane" stylesheets="@../resources/styles/main-screenStyles.css">
             <top>
-                <MenuBar BorderPane.alignment="CENTER">
+                <MenuBar prefHeight="37.0" prefWidth="700.0" styleClass="menuBar" stylesheets="@../resources/styles/main-screenStyles.css" BorderPane.alignment="CENTER">
                     <menus>
                         <Menu mnemonicParsing="false" text="File">
                             <items>
-                                <MenuItem mnemonicParsing="false" text="Close" />
+                                <MenuItem mnemonicParsing="false" onAction="#handleMenuClose" text="Close" />
                             </items>
                         </Menu>
-                        <Menu mnemonicParsing="false" text="Edit">
+                        <Menu mnemonicParsing="false" text="Add">
                             <items>
-                                <MenuItem mnemonicParsing="false" text="Delete" />
+                                <MenuItem mnemonicParsing="false" onAction="#handleAddMember" text="Add Member" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleAddBook" text="Add Book" />
                             </items>
                         </Menu>
+                  <Menu mnemonicParsing="false" text="View">
+                     <items>
+                        <MenuItem mnemonicParsing="false" onAction="#handleViewMembers" text="View Members" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleViewBooks" text="View Books" />
+                     </items>
+                  </Menu>
                         <Menu mnemonicParsing="false" text="Help">
                             <items>
-                                <MenuItem mnemonicParsing="false" text="About" />
+                                <MenuItem fx:id="about" mnemonicParsing="false" onAction="#aboutHandler" text="About" />
                             </items>
                         </Menu>
                     </menus>
                 </MenuBar>
             </top>
             <right>
-                <VBox prefHeight="375.0" prefWidth="139.0" BorderPane.alignment="CENTER">
+                <VBox prefHeight="556.0" prefWidth="139.0" BorderPane.alignment="CENTER">
                     <children>
-                        <Button contentDisplay="TOP" mnemonicParsing="false" prefHeight="95.0" prefWidth="139.0" text="Add Member">
+                        <Button contentDisplay="TOP" mnemonicParsing="false" onAction="#loadAddMember" prefHeight="130.0" prefWidth="139.0" styleClass="side-buttons" stylesheets="@../resources/styles/main-screenStyles.css" text="Add Member">
                             <graphic>
                                 <ImageView fitHeight="32.0" fitWidth="43.0" pickOnBounds="true" preserveRatio="true">
                                     <image>
@@ -53,7 +61,7 @@
                                 </ImageView>
                             </graphic>
                         </Button>
-                        <Button contentDisplay="TOP" mnemonicParsing="false" prefHeight="95.0" prefWidth="139.0" text="Add Book ">
+                        <Button contentDisplay="TOP" mnemonicParsing="false" onAction="#loadAddBook" prefHeight="130.0" prefWidth="139.0" styleClass="side-buttons" stylesheets="@../resources/styles/main-screenStyles.css" text="Add Book ">
                             <graphic>
                                 <ImageView fitHeight="32.0" fitWidth="43.0" pickOnBounds="true" preserveRatio="true">
                                     <image>
@@ -62,7 +70,7 @@
                                 </ImageView>
                             </graphic>
                         </Button>
-                        <Button contentDisplay="TOP" mnemonicParsing="false" prefHeight="95.0" prefWidth="139.0" text="View Members">
+                        <Button contentDisplay="TOP" mnemonicParsing="false" onAction="#loadViewMembers" prefHeight="130.0" prefWidth="139.0" styleClass="side-buttons" stylesheets="@../resources/styles/main-screenStyles.css" text="View Members">
                             <graphic>
                                 <ImageView fitHeight="32.0" fitWidth="43.0" pickOnBounds="true" preserveRatio="true">
                                     <image>
@@ -71,7 +79,7 @@
                                 </ImageView>
                             </graphic>
                         </Button>
-                        <Button contentDisplay="TOP" mnemonicParsing="false" prefHeight="95.0" prefWidth="139.0" text="View Books">
+                        <Button contentDisplay="TOP" mnemonicParsing="false" onAction="#loadViewBooks" prefHeight="130.0" prefWidth="139.0" styleClass="side-buttons" stylesheets="@../resources/styles/main-screenStyles.css" text="View Books">
                             <graphic>
                                 <ImageView fitHeight="32.0" fitWidth="43.0" pickOnBounds="true" preserveRatio="true">
                                     <image>
@@ -80,7 +88,7 @@
                                 </ImageView>
                             </graphic>
                         </Button>
-                        <Button contentDisplay="TOP" mnemonicParsing="false" prefHeight="95.0" prefWidth="139.0" text="View Issued Books ">
+                        <Button contentDisplay="TOP" mnemonicParsing="false" onAction="#loadViewIssuedBooks" prefHeight="130.0" prefWidth="139.0" styleClass="side-buttons" stylesheets="@../resources/styles/main-screenStyles.css" text="View Issued Books ">
                             <graphic>
                                 <ImageView fitHeight="32.0" fitWidth="43.0" pickOnBounds="true" preserveRatio="true">
                                     <image>
@@ -93,22 +101,44 @@
                 </VBox>
             </right>
             <center>
-                <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+                <TabPane prefHeight="460.0" prefWidth="671.0" styleClass="tab" stylesheets="@../resources/styles/main-screenStyles.css" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
                     <tabs>
                         <Tab text="Issue Book">
                             <content>
                                 <AnchorPane prefHeight="200.0" prefWidth="200.0">
                                     <children>
-                                        <HBox alignment="CENTER" prefHeight="122.0" prefWidth="200.0" AnchorPane.bottomAnchor="244.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                        <HBox fx:id="book_info" alignment="CENTER" prefHeight="172.0" prefWidth="666.0" AnchorPane.bottomAnchor="242.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                             <children>
-                                                <TextField alignment="CENTER" prefHeight="40.0" prefWidth="149.0" promptText="Enter Book ID" />
+                                                <TextField fx:id="bookIdInput" alignment="CENTER" onAction="#loadBookInfo" prefHeight="40.0" prefWidth="149.0" promptText="Enter Book ID" />
                                                 <VBox alignment="CENTER" prefHeight="128.0" prefWidth="249.0">
                                                     <HBox.margin>
                                                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                                                     </HBox.margin>
                                                     <children>
-                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Book Name:" />
-                                                        <Text layoutX="104.0" layoutY="82.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Author:">
+                                                        <Text fx:id="bookName" strokeType="OUTSIDE" strokeWidth="0.0" text="Book Name:" />
+                                                        <Text fx:id="authorName" layoutX="104.0" layoutY="82.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Author:">
+                                                            <VBox.margin>
+                                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                            </VBox.margin>
+                                                        </Text>
+                                          <Text fx:id="availability" layoutX="115.0" layoutY="59.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Availability:" />
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                 <padding>
+                                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                 </padding>
+                                        </HBox>
+                                        <HBox fx:id="member_info" alignment="CENTER" layoutY="162.0" prefHeight="157.0" prefWidth="666.0" AnchorPane.bottomAnchor="99.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="162.0">
+                                            <children>
+                                                <TextField fx:id="memberIdInput" alignment="CENTER" onAction="#loadMemberInfo" prefHeight="40.0" prefWidth="149.0" promptText="Enter Member ID" />
+                                                <VBox alignment="CENTER" prefHeight="128.0" prefWidth="249.0">
+                                                    <HBox.margin>
+                                                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                                    </HBox.margin>
+                                                    <children>
+                                                        <Text fx:id="memberName" strokeType="OUTSIDE" strokeWidth="0.0" text="Member Name:" />
+                                                        <Text fx:id="contact" layoutX="104.0" layoutY="82.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Contact:">
                                                             <VBox.margin>
                                                                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                                             </VBox.margin>
@@ -116,28 +146,17 @@
                                                     </children>
                                                 </VBox>
                                             </children>
+                                 <padding>
+                                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                 </padding>
                                         </HBox>
-                                        <HBox alignment="CENTER" layoutY="148.0" prefHeight="142.0" prefWidth="564.0">
+                                        <HBox alignment="CENTER" layoutY="403.0" prefHeight="103.0" prefWidth="759.0" styleClass="bottomHBOX" stylesheets="@../resources/styles/main-screenStyles.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="403.0">
                                             <children>
-                                                <TextField alignment="CENTER" prefHeight="40.0" prefWidth="149.0" promptText="Enter Member ID" />
-                                                <VBox alignment="CENTER" prefHeight="128.0" prefWidth="249.0">
-                                                    <HBox.margin>
-                                                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                                                    </HBox.margin>
-                                                    <children>
-                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Member Name:" />
-                                                        <Text layoutX="104.0" layoutY="82.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Contact:">
-                                                            <VBox.margin>
-                                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                                            </VBox.margin>
-                                                        </Text>
-                                                    </children>
-                                                </VBox>
-                                            </children>
-                                        </HBox>
-                                        <HBox alignment="CENTER" layoutX="2.0" layoutY="290.0" prefHeight="106.0" prefWidth="560.0">
-                                            <children>
-                                                <Button mnemonicParsing="false" prefHeight="37.0" prefWidth="101.0" text="Issue" />
+                                                <Button fx:id="issueBtn" mnemonicParsing="false" onAction="#issueHandler" prefHeight="37.0" prefWidth="101.0" styleClass="setup-button" stylesheets="@../resources/styles/main-screenStyles.css" text="Issue">
+                                       <effect>
+                                          <Glow />
+                                       </effect>
+                                    </Button>
                                             </children>
                                         </HBox>
                                     </children>
