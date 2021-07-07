@@ -7,12 +7,19 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
+import java.awt.*;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.*;
 import java.util.ResourceBundle;
@@ -56,7 +63,7 @@ public class MainController implements Initializable {
 
     @FXML
     private void loadAddBook(javafx.event.ActionEvent actionEvent) {
-        loadWindow("/sample/views/addMember.fxml", "Add Book");
+        loadWindow("/sample/views/addBook.fxml", "Add Book");
     }
 
     @FXML
@@ -81,6 +88,7 @@ public class MainController implements Initializable {
             Stage stage = new Stage(StageStyle.DECORATED);
             stage.setTitle(title);
             stage.setScene(new Scene(parent));
+            stage.getIcons().add(new Image("https://static.thenounproject.com/png/3314579-200.png"));
             stage.show();
 
         } catch (IOException ex) {
@@ -170,7 +178,7 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleAddBook(javafx.event.ActionEvent actionEvent) {
-        loadWindow("/sample/views/addMember.fxml", "Add Book");
+        loadWindow("/sample/views/addBook.fxml", "Add Book");
     }
 
     @FXML
@@ -185,11 +193,48 @@ public class MainController implements Initializable {
 
     @FXML
     private void aboutHandler(ActionEvent actionEvent) {
-        //to be implemented
+        loadWindow("/sample/views/aboutUs.fxml", "About Us");
     }
+    private static final String GitHub = "https://github.com/BlertaMecini/Library-Managment-System-KNK";
+
+    private void loadWebpage(String url) {
+        try {
+            Desktop.getDesktop().browse(new URI(url));
+        } catch (IOException | URISyntaxException e1) {
+            e1.printStackTrace();
+            handleWebpageLoadException(url);
+        }
+    }
+
+    private void handleWebpageLoadException(String url) {
+        WebView browser = new WebView();
+        WebEngine webEngine = browser.getEngine();
+        webEngine.load(url);
+        Stage stage = new Stage();
+        Scene scene = new Scene(new StackPane(browser));
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    @FXML
+    private void loadGitHub(ActionEvent event) {
+        loadWebpage(GitHub);
+    }
+
 
     @FXML
     private  void issueHandler(ActionEvent actionEvent) {
         //to be implemented
+    }
+
+    @FXML
+    private void handleMenuLogOut(ActionEvent actionEvent) {
+        //LOGOUUT te manu bar nalt me implementu qety
+
+    }
+
+    @FXML
+    private void logoutAction(ActionEvent actionEvent) {
+        //LOGOUT te buttoni anash me implementu qety
     }
 }

@@ -27,6 +27,7 @@
                         <Menu mnemonicParsing="false" text="File">
                             <items>
                                 <MenuItem mnemonicParsing="false" onAction="#handleMenuClose" text="Close" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleMenuLogOut" text="Log Out " />
                             </items>
                         </Menu>
                         <Menu mnemonicParsing="false" text="Add">
@@ -97,6 +98,15 @@
                                 </ImageView>
                             </graphic>
                         </Button>
+                  <Button contentDisplay="TOP" layoutX="10.0" layoutY="460.0" mnemonicParsing="false" onAction="#logoutAction" prefHeight="129.0" prefWidth="139.0" styleClass="side-buttons" stylesheets="@../resources/styles/main-screenStyles.css" text="Log Out">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="43.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../resources/images/logout.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
                     </children>
                 </VBox>
             </right>
@@ -150,7 +160,7 @@
                                     <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                                  </padding>
                                         </HBox>
-                                        <HBox alignment="CENTER" layoutY="403.0" prefHeight="103.0" prefWidth="759.0" styleClass="bottomHBOX" stylesheets="@../resources/styles/main-screenStyles.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="403.0">
+                                        <HBox alignment="CENTER" layoutY="411.0" prefHeight="95.0" prefWidth="759.0" styleClass="bottomHBOX" stylesheets="@../resources/styles/main-screenStyles.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="411.0">
                                             <children>
                                                 <Button fx:id="issueBtn" mnemonicParsing="false" onAction="#issueHandler" prefHeight="37.0" prefWidth="101.0" styleClass="setup-button" stylesheets="@../resources/styles/main-screenStyles.css" text="Issue">
                                        <effect>

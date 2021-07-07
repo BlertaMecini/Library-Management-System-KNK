@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="322.0" prefWidth="512.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controllers.addBookController">
+   <children>
+      <VBox prefHeight="400.0" prefWidth="519.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <TextField fx:id="title" promptText="Book Title" styleClass="addBookField" stylesheets="@../resources/styles/main-screenStyles.css">
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="30.0" />
+               </VBox.margin>
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </TextField>
+            <TextField fx:id="id" layoutX="20.0" layoutY="30.0" promptText="Book ID" styleClass="addBookField" stylesheets="@../resources/styles/main-screenStyles.css">
+               <font>
+                  <Font size="15.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </VBox.margin>
+            </TextField>
+            <TextField fx:id="author" layoutX="10.0" layoutY="61.0" promptText="Book Author" styleClass="addBookField" stylesheets="@../resources/styles/main-screenStyles.css">
+               <font>
+                  <Font size="15.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </VBox.margin>
+            </TextField>
+            <TextField fx:id="publisher" layoutX="10.0" layoutY="92.0" promptText="Publisher" styleClass="addBookField" stylesheets="@../resources/styles/main-screenStyles.css">
+               <font>
+                  <Font size="15.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </VBox.margin>
+            </TextField>
+            <HBox prefHeight="60.0" prefWidth="300.0">
+               <children>
+                  <Button fx:id="saveBtn" mnemonicParsing="false" onAction="#saveAction" prefHeight="102.0" prefWidth="305.0" styleClass="addBookButtons" stylesheets="@../resources/styles/main-screenStyles.css" text="Save">
+                     <HBox.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#cancelAction" prefHeight="60.0" prefWidth="309.0" styleClass="addBookButtons" stylesheets="@../resources/styles/main-screenStyles.css" text="Cancel">
+                     <HBox.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+               <VBox.margin>
+                  <Insets top="30.0" />
+               </VBox.margin>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
