@@ -31,23 +31,23 @@ public class MainController implements Initializable {
     @FXML
     private TextField bookIdInput;
     @FXML
-    public Text bookName;
+    private Text bookName;
     @FXML
-    public Text authorName;
+    private Text authorName;
     @FXML
-    public HBox book_info;
+    private HBox book_info;
     @FXML
-    public Text availability;
+    private Text availability;
     @FXML
-    public HBox member_info;
+    private HBox member_info;
     @FXML
-    public TextField memberIdInput;
+    private TextField memberIdInput;
     @FXML
-    public Text contact;
+    private Text contact;
     @FXML
-    public Text memberName;
+    private Text memberName;
     @FXML
-    public StackPane rootPane;
+    private StackPane rootPane;
 
     Connection conn;
 
@@ -89,6 +89,7 @@ public class MainController implements Initializable {
             stage.setTitle(title);
             stage.setScene(new Scene(parent));
             stage.getIcons().add(new Image("https://static.thenounproject.com/png/3314579-200.png"));
+            stage.setResizable(false);
             stage.show();
 
         } catch (IOException ex) {
