@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
@@ -235,7 +236,12 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    private void logoutAction(ActionEvent actionEvent) {
+    private void logoutAction(ActionEvent actionEvent) throws IOException{
         //LOGOUT te buttoni anash me implementu qety
+        Parent parent = FXMLLoader.load(getClass().getResource("../views/login.fxml"));
+        Scene scene = new Scene(parent);
+        Stage primaryStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 }
