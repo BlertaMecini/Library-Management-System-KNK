@@ -37,11 +37,23 @@ public class addMemberController implements Initializable {
     private Button saveBtn;
     @FXML
     private Button cancelBtn;
+    public static boolean onlyDigits(String str, int n) {
+        for (int i = 1; i < n; i++) {
 
+            if (Character.isDigit(str.charAt(i))) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         databaseHandler = new DatabaseHandler();
     }
+
+
 
     @FXML
     // If the users click the save button , this is executed
@@ -60,10 +72,28 @@ public class addMemberController implements Initializable {
         ;
 
 
-        if (mID.isEmpty() || mName.isEmpty() || mEmail.isEmpty() || mPhone.isEmpty() || mGender.isEmpty()) {
+        if (mID.isEmpty() || mName.isEmpty() || mEmail.isEmpty() || mPhone.isEmpty() || mGender.isEmpty()){
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText("ERROR");
             alert.setContentText("All fields are required. Please fill them out!");
+            alert.showAndWait();
+            return;
+        } else if (!mName.matches("^[a-zA-Z\\s]*$")) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("ERROR");
+            alert.setContentText("Name must contain only letters and whitespaces!");
+            alert.showAndWait();
+            return;
+        } else if (!mEmail.matches("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$")) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("ERROR");
+            alert.setContentText("The email you typed is not valid!");
+            alert.showAndWait();
+            return;
+        } else if (!mPhone.matches("^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\\s\\./0-9]*$")) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("ERROR");
+            alert.setContentText("Invalid Phone Number");
             alert.showAndWait();
             return;
         }
