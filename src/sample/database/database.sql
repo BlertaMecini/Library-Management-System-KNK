@@ -23,5 +23,16 @@ primary key(id)
 );
 
 
+CREATE TABLE  issuedBooks (
+bookID varchar(200) not null,
+memberID varchar(200) not null,
+issueTime timestamp default CURRENT_TIMESTAMP,
+renew_count integer default 0,
+primary key(bookID),
+foreign key(bookID) references addBook(id),
+foreign key(memberID) references addMember(id)
+);
+
+
 
 

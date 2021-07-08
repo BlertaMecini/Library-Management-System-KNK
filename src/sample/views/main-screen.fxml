@@ -11,6 +11,7 @@
 <?import javafx.scene.effect.Glow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -24,28 +25,66 @@
             <top>
                 <MenuBar prefHeight="37.0" prefWidth="700.0" styleClass="menuBar" stylesheets="@../resources/styles/main-screenStyles.css" BorderPane.alignment="CENTER">
                     <menus>
-                        <Menu mnemonicParsing="false" text="File">
+                        <Menu text="_File">
                             <items>
-                                <MenuItem mnemonicParsing="false" onAction="#handleMenuClose" text="Close" />
-                        <MenuItem mnemonicParsing="false" onAction="#handleMenuLogOut" text="Log Out " />
+                                <MenuItem onAction="#handleMenuClose" text="Close">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="C" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator></MenuItem>
+                        <MenuItem onAction="#handleMenuLogOut" text="Log Out ">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="L" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator></MenuItem>
                             </items>
+                     <accelerator>
+                        <KeyCodeCombination alt="DOWN" code="F" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
                         </Menu>
-                        <Menu mnemonicParsing="false" text="Add">
+                        <Menu text="_Add">
                             <items>
-                                <MenuItem mnemonicParsing="false" onAction="#handleAddMember" text="Add Member" />
-                        <MenuItem mnemonicParsing="false" onAction="#handleAddBook" text="Add Book" />
+                                <MenuItem onAction="#handleAddMember" text="Add Member">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="M" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator></MenuItem>
+                        <MenuItem onAction="#handleAddBook" text="Add Book">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="B" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator></MenuItem>
                             </items>
+                     <accelerator>
+                        <KeyCodeCombination alt="DOWN" code="A" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
                         </Menu>
-                  <Menu mnemonicParsing="false" text="View">
+                  <Menu text="_View">
                      <items>
-                        <MenuItem mnemonicParsing="false" onAction="#handleViewMembers" text="View Members" />
-                        <MenuItem mnemonicParsing="false" onAction="#handleViewBooks" text="View Books" />
+                        <MenuItem onAction="#handleViewMembers" text="View Members">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="F1" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator></MenuItem>
+                        <MenuItem onAction="#handleViewBooks" text="View Books">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="F2" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator></MenuItem>
+                        <MenuItem onAction="#handleViewIssuedBooks" text="View  Issued Books">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="F3" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator>
+                        </MenuItem>
                      </items>
+                     <accelerator>
+                        <KeyCodeCombination alt="DOWN" code="V" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
                   </Menu>
-                        <Menu mnemonicParsing="false" text="Help">
+                        <Menu text="_Help">
                             <items>
-                                <MenuItem fx:id="about" mnemonicParsing="false" onAction="#aboutHandler" text="About" />
+                                <MenuItem fx:id="about" onAction="#aboutHandler" text="About">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="F12" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator></MenuItem>
                             </items>
+                     <accelerator>
+                        <KeyCodeCombination alt="DOWN" code="H" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
                         </Menu>
                     </menus>
                 </MenuBar>

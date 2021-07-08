@@ -85,7 +85,7 @@ public class addBookController implements Initializable {
             alert.showAndWait();
             return;
         }
-        else if(!bookAuthor.matches("[a-zA-Z]+")){
+        else if(!bookAuthor.matches("[a-zA-Z ]+")){
             Alert alert=new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText("ERROR");
             alert.setContentText("Author name should contain only letters!");
