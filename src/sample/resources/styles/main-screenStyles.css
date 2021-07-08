@@ -1,3 +1,5 @@
+/*Styling the main window*/
+
 .root{
 -fx-background-color: #eae4ff;
 -fx-font-size:16;
@@ -52,7 +54,6 @@
 -fx-background-color:black;
 -fx-text-fill: #FFFFFF;
 }
-
 
 
 

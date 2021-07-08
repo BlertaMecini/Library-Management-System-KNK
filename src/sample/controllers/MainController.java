@@ -7,6 +7,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
@@ -16,19 +18,26 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import sample.repositories.DatabaseHandler;
 
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
 public class MainController implements Initializable {
+    private static final String GitHub = "https://github.com/BlertaMecini/Library-Managment-System-KNK";
+    Connection conn;
+    DatabaseHandler databaseHandler;
     @FXML
     private TextField bookIdInput;
     @FXML
@@ -50,15 +59,14 @@ public class MainController implements Initializable {
     @FXML
     private StackPane rootPane;
 
-    Connection conn;
-
     @Override
     public void initialize(URL rl, ResourceBundle rb) {
+        databaseHandler = DatabaseHandler.getInstance();
     }
 
     //need to change location to real ones
     @FXML
-   private void loadAddMember(javafx.event.ActionEvent actionEvent) {
+    private void loadAddMember(javafx.event.ActionEvent actionEvent) {
         loadWindow("/sample/views/addMember.fxml", "Add Member");
     }
 
@@ -82,7 +90,6 @@ public class MainController implements Initializable {
         loadWindow("/sample/views/addMember.fxml", "Issued Books");
     }
 
-
     void loadWindow(String loc, String title) {
         try {
             Parent parent = FXMLLoader.load(getClass().getResource(loc));
@@ -103,33 +110,31 @@ public class MainController implements Initializable {
     private void loadBookInfo(ActionEvent actionEvent) throws SQLException {
         clearBookcache();
 
-        String id=bookIdInput.getText();
-        Statement stmt = conn.createStatement();
-        String query="SELECT * FROM BOOK WHERE id='"+id+"'";
-        ResultSet rs = stmt.executeQuery(query);
-        Boolean flag=false;
+        String id = bookIdInput.getText();
+        String query = "SELECT * FROM addBook WHERE id='" + id + "'";
+        ResultSet rs = databaseHandler.execQuery(query);
+        Boolean flag = false;
 
-        try{
-        while(rs.next())
-        {
-            String bName=rs.getString("title");
-            String bAuthor=rs.getString("author");
-            Boolean bStatus=rs.getBoolean("isAvail");
-            bookName.setText(bName);
-            authorName.setText(bAuthor);
-            String status=(bStatus)?"Available":"Not Available";
-            availability.setText(status);
-            flag=true;
-        }
-        if(!flag){
-            bookName.setText("No such book found");
-        }
-        } catch (SQLException ex){
+        try {
+            while (rs.next()) {
+                String bName = rs.getString("title");
+                String bAuthor = rs.getString("author");
+                Boolean bStatus = rs.getBoolean("isAvail");
+                bookName.setText(bName);
+                authorName.setText(bAuthor);
+                String status = (bStatus) ? "Available" : "Not Available";
+                availability.setText(status);
+                flag = true;
+            }
+            if (!flag) {
+                bookName.setText("No such book is found!");
+            }
+        } catch (SQLException ex) {
             Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    void clearBookcache(){
+    void clearBookcache() {
         bookName.setText("");
         authorName.setText("");
         availability.setText("");
@@ -138,39 +143,36 @@ public class MainController implements Initializable {
     @FXML
     private void loadMemberInfo(ActionEvent actionEvent) throws SQLException {
         clearMembercache();
-        String id=memberIdInput.getText();
-        Statement stmt = conn.createStatement();
-        String query="SELECT * FROM MEMBER WHERE id='"+id+"'";
-        ResultSet rs= stmt.executeQuery(query);
-        Boolean flag=false;
-        try{
-            while(rs.next())
-            {
-                String mName=rs.getString("name");
-                String mMobile=rs.getString("mobile");
+        String id = memberIdInput.getText();
+        String query = "SELECT * FROM addMember WHERE id='" + id + "'";
+        ResultSet rs = databaseHandler.execQuery(query);
+        Boolean flag = false;
+        try {
+            while (rs.next()) {
+                String mName = rs.getString("fullname");
+                String mMobile = rs.getString("mobile");
 
                 memberName.setText(mName);
                 contact.setText(mMobile);
 
-                flag=true;
+                flag = true;
             }
-            if(!flag){
-                memberName.setText("No such member found");
+            if (!flag) {
+                memberName.setText("No such member is found!");
             }
-        } catch (SQLException ex){
+        } catch (SQLException ex) {
             Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    void clearMembercache(){
+    void clearMembercache() {
         memberName.setText("");
         contact.setText("");
     }
 
-
     @FXML
     private void handleMenuClose(ActionEvent actionEvent) {
-        ((Stage)rootPane.getScene().getWindow()).close();
+        ((Stage) rootPane.getScene().getWindow()).close();
     }
 
     @FXML
@@ -194,10 +196,14 @@ public class MainController implements Initializable {
     }
 
     @FXML
+    private void handleViewIssuedBooks(ActionEvent actionEvent) {
+        loadWindow("/sample/views/addMember.fxml", "View Issued Books");
+    }
+
+    @FXML
     private void aboutHandler(ActionEvent actionEvent) {
         loadWindow("/sample/views/aboutUs.fxml", "About Us");
     }
-    private static final String GitHub = "https://github.com/BlertaMecini/Library-Managment-System-KNK";
 
     private void loadWebpage(String url) {
         try {
@@ -225,23 +231,68 @@ public class MainController implements Initializable {
 
 
     @FXML
-    private  void issueHandler(ActionEvent actionEvent) {
-        //to be implemented
+    private void issueHandler(ActionEvent actionEvent) {
+        String memberID = memberIdInput.getText();
+        String bookID = bookIdInput.getText();
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirm Issue Operation");
+        alert.setHeaderText(null);
+        alert.setContentText("Are you sure you want to issue the book titled '" + bookName.getText() + "' to '" + memberName.getText() + "' ?");
+
+        Optional<ButtonType> response = alert.showAndWait();
+        if (response.get() == ButtonType.OK) {
+            String query1 = "INSERT INTO issuedBooks(bookID,memberID) VALUES("
+                    + "'" + bookID + "',"
+                    + "'" + memberID + "')";
+
+            String query2 = "UPDATE addBook SET isAvail=false where id='" + bookID + "'";
+
+            if (databaseHandler.execAction(query1) && databaseHandler.execAction(query2)) {
+                Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
+                alert1.setTitle("SUCCESS");
+                alert1.setHeaderText(null);
+                alert1.setContentText("Book was issued succesfully!");
+                alert1.showAndWait();
+            } else {
+                Alert alert2 = new Alert(Alert.AlertType.ERROR);
+                alert2.setTitle("FAILED");
+                alert2.setHeaderText(null);
+                alert2.setContentText("Sorry, we couldn't issue the book!");
+                alert2.showAndWait();
+            }
+        } else if (response.get() == ButtonType.CANCEL) {
+            Alert alert3 = new Alert(Alert.AlertType.INFORMATION);
+            alert3.setTitle("CANCELED");
+            alert3.setHeaderText(null);
+            alert3.setContentText("Book issue was canceled!");
+            alert3.showAndWait();
+        }
+
     }
 
     @FXML
-    private void handleMenuLogOut(ActionEvent actionEvent) {
-        //LOGOUUT te manu bar nalt me implementu qety
+    private void handleMenuLogOut(ActionEvent actionEvent) throws IOException {
+        Parent parent = FXMLLoader.load(getClass().getResource("../views/login.fxml"));
+        Scene scene = new Scene(parent);
+        Stage primaryStage = new Stage();
+        primaryStage.initStyle(StageStyle.DECORATED);
+        primaryStage.setTitle("Library Managment System");
+        primaryStage.setResizable(false);
+        primaryStage.getIcons().add(new Image("https://static.thenounproject.com/png/3314579-200.png"));
+        ((Stage) rootPane.getScene().getWindow()).close();
+        primaryStage.setScene(scene);
+        primaryStage.show();
 
     }
 
     @FXML
-    private void logoutAction(ActionEvent actionEvent) throws IOException{
-        //LOGOUT te buttoni anash me implementu qety
+    private void logoutAction(ActionEvent actionEvent) throws IOException {
         Parent parent = FXMLLoader.load(getClass().getResource("../views/login.fxml"));
         Scene scene = new Scene(parent);
         Stage primaryStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
         primaryStage.setScene(scene);
         primaryStage.show();
     }
+
 }

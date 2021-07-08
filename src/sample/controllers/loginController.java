@@ -1,4 +1,4 @@
-package sample.controller;
+package sample.controllers;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,7 +9,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.PasswordField;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -28,11 +30,13 @@ public class loginController {
     @FXML
     private PasswordField passwordPasswordField;
 
+    private static Connection connectDB=null;
+
     public void loginButtonOnAction(ActionEvent e) {
-        if(usernameTextField.getText().isBlank() == false && passwordPasswordField.getText().isBlank() == false) {
+        if(!usernameTextField.getText().isBlank() && !passwordPasswordField.getText().isBlank()) {
             // loginMessageLabel.setText("You try to login!");
             DatabaseConnection connectNow = new DatabaseConnection();
-            Connection connectDB = connectNow.getConnection();
+            connectDB = connectNow.getConnection();
 
             String verifyLogin = "select count(1) from userAccount where username = '" + usernameTextField.getText() + "' and password = '" + passwordPasswordField.getText() + "'";
             try {
@@ -44,8 +48,13 @@ public class loginController {
                         //loginMessageLabel.setText("Welcome!");
                         Parent parent = FXMLLoader.load(getClass().getResource("../views/main-screen.fxml"));
                         Scene scene = new Scene(parent);
-                        Stage primaryStage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+                        Stage primaryStage=new Stage();
+                        primaryStage.initStyle(StageStyle.DECORATED);
+                        primaryStage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+
                         primaryStage.setScene(scene);
+                        primaryStage.setTitle("Library Managment System");
+                        primaryStage.getIcons().add(new Image("https://static.thenounproject.com/png/3314579-200.png"));
                         primaryStage.show();
                     } else {
                         loginMessageLabel.setText("Invalid Login. Please try again.");
@@ -63,6 +72,4 @@ public class loginController {
         Stage stage = (Stage) cancelButton.getScene().getWindow();
         stage.close();
     }
-
-
 }

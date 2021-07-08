@@ -18,6 +18,8 @@ public final  class DatabaseHandler {
 
     public DatabaseHandler(){
         createConnection();
+        setupBookTable();
+        setupIssuedBooksTable();
     }
 
     public static DatabaseHandler getInstance(){
@@ -38,7 +40,7 @@ public final  class DatabaseHandler {
     }
 
 
-    /*void setupBookTable(){
+    void setupBookTable(){
         String TABLE_NAME="addBook";
         try{
             stmt=conn.createStatement();
@@ -59,7 +61,32 @@ public final  class DatabaseHandler {
         } catch (SQLException ex){
             System.err.println(ex.getMessage()+ " ...setupDatabase");
         }
-    }*/
+    }
+
+
+    void setupIssuedBooksTable(){
+        String TABLE_NAME="issuedBooks";
+        try{
+            stmt=conn.createStatement();
+            DatabaseMetaData dbm=conn.getMetaData();
+            ResultSet tables=dbm.getTables(null,null,TABLE_NAME,null);
+            if(tables.next()){
+                System.out.println("Table "+TABLE_NAME+ " already exists.");
+            } else{
+                stmt.execute("CREATE TABLE"+TABLE_NAME+"("
+                        + " bookID varchar(200) not null ,\n"
+                        + " memberID varchar(200) not null ,\n"
+                        + " issueTime timestamp default CURRENT_TIMESTAMP,\n"
+                        + " renew_count integer default 0 ,\n"
+                        + " primary key(bookID),\n"
+                        + " foreign key(bookID) references addBook(id),\n"
+                        + " foreign key(memberID) references addMember(id),\n"
+                        +")");
+            }
+        } catch (SQLException ex){
+            System.err.println(ex.getMessage()+ " ...setupDatabase");
+        }
+    }
 
 
     public ResultSet execQuery(String query) {
@@ -84,7 +111,7 @@ public final  class DatabaseHandler {
         }
         catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Error:" + ex.getMessage(), "Error Occured", JOptionPane.ERROR_MESSAGE);
-            System.out.println("Exception at execQuery:dataHandler" + ex.getLocalizedMessage());
+            System.out.println("Exception at execQuery:dataHandler " + ex.getLocalizedMessage());
             return false;
         }
     }
