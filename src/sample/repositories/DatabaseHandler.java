@@ -12,7 +12,7 @@ public final  class DatabaseHandler {
     private static DatabaseHandler handler=null;
     private static String databaseName="admin";
     private static String userName="root";
-    private static String password="error404";
+    private static String password="1957";
     private static final String DB_URL="jdbc:mysql://127.0.0.1/"+ databaseName;
 
     private static Connection conn=null;
