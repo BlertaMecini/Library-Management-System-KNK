@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -35,6 +36,10 @@ public class addBookController implements Initializable {
     private Button saveBtn;
     @FXML
     private Button cancelBtn;
+    @FXML
+    private CheckBox check;
+
+
 
     public static boolean onlyDigits(String str, int n) {
         for (int i = 1; i < n; i++) {
@@ -65,7 +70,7 @@ public class addBookController implements Initializable {
         boolean onlyDigits = onlyDigits(bookId, bookId.length());
 
         // Validating the fields
-        if (bookId.isEmpty() || bookAuthor.isEmpty() || bookName.isEmpty() || bookPublisher.isEmpty() || bookQuantity.isEmpty()) {
+        if (bookId.isEmpty() || bookAuthor.isEmpty() || bookName.isEmpty() || bookPublisher.isEmpty() || bookQuantity.isEmpty() || !check.isSelected()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText("ERROR");
             alert.setContentText("All fields are required. Please fill them out!");
@@ -131,6 +136,7 @@ public class addBookController implements Initializable {
         author.setText("");
         publisher.setText("");
         quantity.setText("");
+        check.setSelected(false);
     }
 
     // Closing the window when the close button is clicked

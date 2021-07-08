@@ -3,10 +3,7 @@ package sample.controllers;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import sample.repositories.DatabaseHandler;
@@ -37,6 +34,8 @@ public class addMemberController implements Initializable {
     private Button saveBtn;
     @FXML
     private Button cancelBtn;
+    @FXML
+    private CheckBox check;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -60,7 +59,7 @@ public class addMemberController implements Initializable {
         ;
 
 
-        if (mID.isEmpty() || mName.isEmpty() || mEmail.isEmpty() || mPhone.isEmpty() || mGender.isEmpty()) {
+        if (mID.isEmpty() || mName.isEmpty() || mEmail.isEmpty() || mPhone.isEmpty() || mGender.isEmpty() || !check.isSelected()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText("ERROR");
             alert.setContentText("All fields are required. Please fill them out!");
@@ -102,6 +101,7 @@ public class addMemberController implements Initializable {
         phone.setText("");
         male.setSelected(false);
         female.setSelected(false);
+        check.setSelected(false);
     }
 
     // A method to close the window if user clicks the close button
