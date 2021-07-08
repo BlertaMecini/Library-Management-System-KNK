@@ -3,9 +3,12 @@ package sample.repositories;
 import javax.swing.*;
 import java.sql.*;
 
+// This class handles the database connection
 
 public final  class DatabaseHandler {
 
+    // Variables used for connecting to the database and creating statements
+    // Change these values to your mySQL values
     private static DatabaseHandler handler=null;
     private static String databaseName="admin";
     private static String userName="root";
@@ -16,12 +19,14 @@ public final  class DatabaseHandler {
     private static Statement stmt=null;
 
 
+    // Constructor of the class has methods that are called when the class is instanciated
     public DatabaseHandler(){
         createConnection();
         setupBookTable();
         setupIssuedBooksTable();
     }
 
+    // If there is no instance of the class we get the instance
     public static DatabaseHandler getInstance(){
         if(handler==null){
             handler=new DatabaseHandler();
@@ -29,6 +34,8 @@ public final  class DatabaseHandler {
         return handler;
     }
 
+
+    // Conneting to the database
     void createConnection(){
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -38,8 +45,7 @@ public final  class DatabaseHandler {
             ex.printStackTrace();
         }
     }
-
-
+    // Setting up the table to add books, or this can be done manyally in mySQL
     void setupBookTable(){
         String TABLE_NAME="addBook";
         try{
@@ -50,11 +56,12 @@ public final  class DatabaseHandler {
                 System.out.println("Table "+TABLE_NAME+ " already exists.");
             } else{
                 stmt.execute("CREATE TABLE"+TABLE_NAME+"("
-                        + " id varchar(200) not null \n,"
-                        + " title varchar(200) not null ,\n"
-                        + " author varchar(200) not null ,\n"
-                        + " publisher varchar(200) not nulll ,\n"
-                        + " isAvail boolean default true,\n"
+                        + " id varchar(200) not null ,"
+                        + " title varchar(200) not null ,"
+                        + " author varchar(200) not null ,"
+                        + " publisher varchar(200) not nulll ,"
+                        + " quantity int not nulll ,"
+                        + " isAvail boolean default true,"
                         + " primary key(id)"
                         +")");
             }
@@ -64,6 +71,7 @@ public final  class DatabaseHandler {
     }
 
 
+    // Setting up the table for issued books
     void setupIssuedBooksTable(){
         String TABLE_NAME="issuedBooks";
         try{
@@ -73,14 +81,14 @@ public final  class DatabaseHandler {
             if(tables.next()){
                 System.out.println("Table "+TABLE_NAME+ " already exists.");
             } else{
-                stmt.execute("CREATE TABLE"+TABLE_NAME+"("
-                        + " bookID varchar(200) not null ,\n"
-                        + " memberID varchar(200) not null ,\n"
-                        + " issueTime timestamp default CURRENT_TIMESTAMP,\n"
-                        + " renew_count integer default 0 ,\n"
-                        + " primary key(bookID),\n"
-                        + " foreign key(bookID) references addBook(id),\n"
-                        + " foreign key(memberID) references addMember(id),\n"
+                stmt.execute("CREATE TABLE "+TABLE_NAME+"("
+                        + " bookID varchar(200) not null ,"
+                        + " memberID varchar(200) not null ,"
+                        + " issueTime timestamp default CURRENT_TIMESTAMP,"
+                        + " renew_count integer default 0 ,"
+                        + " primary key(bookID,memberID),"
+                        + " foreign key(bookID) references addBook(id),"
+                        + " foreign key(memberID) references addMember(memberID)"
                         +")");
             }
         } catch (SQLException ex){
@@ -88,7 +96,7 @@ public final  class DatabaseHandler {
         }
     }
 
-
+    // A method that returns a ResultSet, this is used to execute queries
     public ResultSet execQuery(String query) {
         ResultSet result;
         try {
@@ -103,6 +111,7 @@ public final  class DatabaseHandler {
         return result;
     }
 
+    // A method that returns boolean values, used to inform if the action was succesfully executed
     public boolean execAction(String qu) {
         try {
             stmt = conn.createStatement();

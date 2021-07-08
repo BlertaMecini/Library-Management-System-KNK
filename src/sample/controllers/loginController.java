@@ -1,4 +1,5 @@
 package sample.controllers;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -7,33 +8,33 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import sample.repositories.DatabaseConnection;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+
+// This is a controller for the login
 public class loginController {
+    private static Connection connectDB = null;
     @FXML
     private Button cancelButton;
-
     @FXML
     private Label loginMessageLabel;
-
     @FXML
     private TextField usernameTextField;
-
     @FXML
     private PasswordField passwordPasswordField;
 
-    private static Connection connectDB=null;
-
     public void loginButtonOnAction(ActionEvent e) {
-        if(!usernameTextField.getText().isBlank() && !passwordPasswordField.getText().isBlank()) {
+
+        if (!usernameTextField.getText().isBlank() && !passwordPasswordField.getText().isBlank()) {
             // loginMessageLabel.setText("You try to login!");
             DatabaseConnection connectNow = new DatabaseConnection();
             connectDB = connectNow.getConnection();
@@ -43,12 +44,12 @@ public class loginController {
                 Statement statement = connectDB.createStatement();
                 ResultSet queryResult = statement.executeQuery(verifyLogin);
 
-                while(queryResult.next()) {
-                    if(queryResult.getInt(1) == 1) {
+                while (queryResult.next()) {
+                    if (queryResult.getInt(1) == 1) {
                         //loginMessageLabel.setText("Welcome!");
                         Parent parent = FXMLLoader.load(getClass().getResource("../views/main-screen.fxml"));
                         Scene scene = new Scene(parent);
-                        Stage primaryStage=new Stage();
+                        Stage primaryStage = new Stage();
                         primaryStage.initStyle(StageStyle.DECORATED);
                         primaryStage = (Stage) ((Node) e.getSource()).getScene().getWindow();
 
@@ -68,7 +69,7 @@ public class loginController {
         }
     }
 
-    public void cancelButtonOnAction(ActionEvent e){
+    public void cancelButtonOnAction(ActionEvent e) {
         Stage stage = (Stage) cancelButton.getScene().getWindow();
         stage.close();
     }

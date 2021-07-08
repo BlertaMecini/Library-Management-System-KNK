@@ -34,10 +34,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
+//Controller for the main window
 public class MainController implements Initializable {
+
     private static final String GitHub = "https://github.com/BlertaMecini/Library-Managment-System-KNK";
     Connection conn;
     DatabaseHandler databaseHandler;
+
     @FXML
     private TextField bookIdInput;
     @FXML
@@ -64,7 +67,9 @@ public class MainController implements Initializable {
         databaseHandler = DatabaseHandler.getInstance();
     }
 
-    //need to change location to real ones
+
+    // Loading the corrosponding windows when buttons are clicked
+    // Need to change location to real ones for view members,books,issued books
     @FXML
     private void loadAddMember(javafx.event.ActionEvent actionEvent) {
         loadWindow("/sample/views/addMember.fxml", "Add Member");
@@ -90,6 +95,7 @@ public class MainController implements Initializable {
         loadWindow("/sample/views/addMember.fxml", "Issued Books");
     }
 
+    // A method for loading windows
     void loadWindow(String loc, String title) {
         try {
             Parent parent = FXMLLoader.load(getClass().getResource(loc));
@@ -105,9 +111,10 @@ public class MainController implements Initializable {
         }
     }
 
-    // not done yet
+    // Loading the book information for issuing books
     @FXML
     private void loadBookInfo(ActionEvent actionEvent) throws SQLException {
+
         clearBookcache();
 
         String id = bookIdInput.getText();
@@ -119,10 +126,10 @@ public class MainController implements Initializable {
             while (rs.next()) {
                 String bName = rs.getString("title");
                 String bAuthor = rs.getString("author");
-                Boolean bStatus = rs.getBoolean("isAvail");
+                Integer bStatus = rs.getInt("quantity");
                 bookName.setText(bName);
                 authorName.setText(bAuthor);
-                String status = (bStatus) ? "Available" : "Not Available";
+                String status = (bStatus) > 0 ? "Available" : "Not Available";
                 availability.setText(status);
                 flag = true;
             }
@@ -134,23 +141,28 @@ public class MainController implements Initializable {
         }
     }
 
+    // A method to clear the book cache when we search for a book
     void clearBookcache() {
         bookName.setText("");
         authorName.setText("");
         availability.setText("");
     }
 
+
+    // A method for loading member info for issuing books
     @FXML
     private void loadMemberInfo(ActionEvent actionEvent) throws SQLException {
+
         clearMembercache();
         String id = memberIdInput.getText();
-        String query = "SELECT * FROM addMember WHERE id='" + id + "'";
+        String query = "SELECT * FROM addMember WHERE memberID='" + id + "'";
         ResultSet rs = databaseHandler.execQuery(query);
         Boolean flag = false;
         try {
             while (rs.next()) {
-                String mName = rs.getString("fullname");
-                String mMobile = rs.getString("mobile");
+                String mName = rs.getString("name");
+                String mMobile = rs.getString("email");
+
 
                 memberName.setText(mName);
                 contact.setText(mMobile);
@@ -165,15 +177,18 @@ public class MainController implements Initializable {
         }
     }
 
+    // Clearing the member cashe
     void clearMembercache() {
         memberName.setText("");
         contact.setText("");
     }
 
+    // Handlind the menu items at menu bar
     @FXML
     private void handleMenuClose(ActionEvent actionEvent) {
         ((Stage) rootPane.getScene().getWindow()).close();
     }
+
 
     @FXML
     private void handleAddMember(javafx.event.ActionEvent actionEvent) {
@@ -205,6 +220,7 @@ public class MainController implements Initializable {
         loadWindow("/sample/views/aboutUs.fxml", "About Us");
     }
 
+    // A method for loading web pages
     private void loadWebpage(String url) {
         try {
             Desktop.getDesktop().browse(new URI(url));
@@ -214,6 +230,7 @@ public class MainController implements Initializable {
         }
     }
 
+    // If exceptions happen during the loading process of web pages
     private void handleWebpageLoadException(String url) {
         WebView browser = new WebView();
         WebEngine webEngine = browser.getEngine();
@@ -224,16 +241,20 @@ public class MainController implements Initializable {
         stage.show();
     }
 
+
+    // Loading GitHub
     @FXML
     private void loadGitHub(ActionEvent event) {
         loadWebpage(GitHub);
     }
 
 
+    // Here we handle the issue book functionality
     @FXML
     private void issueHandler(ActionEvent actionEvent) {
         String memberID = memberIdInput.getText();
         String bookID = bookIdInput.getText();
+        String isAvailable = availability.getText();
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirm Issue Operation");
@@ -242,57 +263,90 @@ public class MainController implements Initializable {
 
         Optional<ButtonType> response = alert.showAndWait();
         if (response.get() == ButtonType.OK) {
-            String query1 = "INSERT INTO issuedBooks(bookID,memberID) VALUES("
-                    + "'" + bookID + "',"
-                    + "'" + memberID + "')";
+            if (isAvailable == "Available") {
+                String query1 = "INSERT INTO issuedBooks(bookID,memberID) VALUES("
+                        + "'" + bookID + "',"
+                        + "'" + memberID + "')";
 
-            String query2 = "UPDATE addBook SET isAvail=false where id='" + bookID + "'";
+                String query2 = "UPDATE addBook SET  quantity=quantity-1  where id='" + bookID + "'";
 
-            if (databaseHandler.execAction(query1) && databaseHandler.execAction(query2)) {
-                Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
-                alert1.setTitle("SUCCESS");
-                alert1.setHeaderText(null);
-                alert1.setContentText("Book was issued succesfully!");
-                alert1.showAndWait();
+
+                if (databaseHandler.execAction(query1) && databaseHandler.execAction(query2)) {
+                    Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
+                    alert1.setTitle("SUCCESS");
+                    alert1.setHeaderText(null);
+                    alert1.setContentText("Book was issued succesfully!");
+                    alert1.showAndWait();
+
+                    clearMembercache();
+                    clearBookcache();
+                } else {
+                    Alert alert2 = new Alert(Alert.AlertType.ERROR);
+                    alert2.setTitle("FAILED");
+                    alert2.setHeaderText(null);
+                    alert2.setContentText("Sorry, we couldn't issue the book!");
+                    alert2.showAndWait();
+                }
             } else {
-                Alert alert2 = new Alert(Alert.AlertType.ERROR);
-                alert2.setTitle("FAILED");
-                alert2.setHeaderText(null);
-                alert2.setContentText("Sorry, we couldn't issue the book!");
-                alert2.showAndWait();
+                Alert alert3 = new Alert(Alert.AlertType.ERROR);
+                alert3.setTitle("FAILED");
+                alert3.setHeaderText(null);
+                alert3.setContentText("This book isn't available!");
+                alert3.showAndWait();
             }
         } else if (response.get() == ButtonType.CANCEL) {
-            Alert alert3 = new Alert(Alert.AlertType.INFORMATION);
-            alert3.setTitle("CANCELED");
-            alert3.setHeaderText(null);
-            alert3.setContentText("Book issue was canceled!");
-            alert3.showAndWait();
+            Alert alert4 = new Alert(Alert.AlertType.INFORMATION);
+            alert4.setTitle("CANCELED");
+            alert4.setHeaderText(null);
+            alert4.setContentText("Book issue was canceled!");
+            alert4.showAndWait();
         }
 
     }
 
+
+    // Loging the admin out if he clicks the log out menu item
     @FXML
     private void handleMenuLogOut(ActionEvent actionEvent) throws IOException {
-        Parent parent = FXMLLoader.load(getClass().getResource("../views/login.fxml"));
-        Scene scene = new Scene(parent);
-        Stage primaryStage = new Stage();
-        primaryStage.initStyle(StageStyle.DECORATED);
-        primaryStage.setTitle("Library Managment System");
-        primaryStage.setResizable(false);
-        primaryStage.getIcons().add(new Image("https://static.thenounproject.com/png/3314579-200.png"));
-        ((Stage) rootPane.getScene().getWindow()).close();
-        primaryStage.setScene(scene);
-        primaryStage.show();
 
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Log Out");
+        alert.setHeaderText(null);
+        alert.setContentText("Are you sure you want to Log Out?");
+
+        Optional<ButtonType> response = alert.showAndWait();
+        if (response.get() == ButtonType.OK) {
+            Parent parent = FXMLLoader.load(getClass().getResource("../views/login.fxml"));
+            Scene scene = new Scene(parent);
+            Stage primaryStage = new Stage();
+            primaryStage.initStyle(StageStyle.DECORATED);
+            primaryStage.setTitle("Library Managment System");
+            primaryStage.setResizable(false);
+            primaryStage.getIcons().add(new Image("https://static.thenounproject.com/png/3314579-200.png"));
+            ((Stage) rootPane.getScene().getWindow()).close();
+            primaryStage.setScene(scene);
+            primaryStage.show();
+        } else{
+            return;
+        }
     }
 
-    @FXML
-    private void logoutAction(ActionEvent actionEvent) throws IOException {
-        Parent parent = FXMLLoader.load(getClass().getResource("../views/login.fxml"));
-        Scene scene = new Scene(parent);
-        Stage primaryStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
+        // Logging the user out if he clicks the log out button
+        @FXML
+        private void logoutAction (ActionEvent actionEvent) throws IOException {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Log Out");
+            alert.setHeaderText(null);
+            alert.setContentText("Are you sure you want to Log Out?");
 
-}
+            Optional<ButtonType> response = alert.showAndWait();
+            if (response.get() == ButtonType.OK) {
+                Parent parent = FXMLLoader.load(getClass().getResource("../views/login.fxml"));
+                Scene scene = new Scene(parent);
+                Stage primaryStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+                primaryStage.setScene(scene);
+                primaryStage.show();
+            }
+        }
+
+    }
