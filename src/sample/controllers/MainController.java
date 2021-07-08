@@ -82,7 +82,7 @@ public class MainController implements Initializable {
 
     @FXML
     private void loadViewMembers(javafx.event.ActionEvent actionEvent) {
-        loadWindow("/sample/views/addMember.fxml", "Member List");
+        loadWindow("/sample/views/viewMembers.fxml", "Members List");
     }
 
     @FXML
@@ -202,7 +202,7 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleViewMembers(javafx.event.ActionEvent actionEvent) {
-        loadWindow("/sample/views/addMember.fxml", "View Members");
+        loadWindow("/sample/views/viewMembers.fxml", "View Members");
     }
 
     @FXML

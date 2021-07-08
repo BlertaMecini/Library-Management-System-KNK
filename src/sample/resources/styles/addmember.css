@@ -1,7 +1,7 @@
 
 /* Styling the add member screen */
 
-.addMemberBtn{
+.addMemberBtn , .viewMemberBtn{
     -fx-background-color: #929FB9;
     -fx-text-fill: white;
     -fx-font-size:16;
@@ -9,11 +9,14 @@
     -fx-border-color: white;
 }
 
-.addMemberBtn:hover {
+.addMemberBtn:hover , viewMemberBtn:hover{
     -fx-background-color: #929FCC;
     -fx-text-fill: white;
 }
 
 .mtextfield{
+    -fx-font-size: 14;
+}
+.columns{
     -fx-font-size: 14;
 }
