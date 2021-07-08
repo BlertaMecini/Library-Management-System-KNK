@@ -22,6 +22,15 @@ isAvail boolean default true,
 primary key(id)
 );
 
+CREATE TABLE  addMember (
+memberID varchar(200) not null,
+name varchar(200) not null,
+email varchar(200) not null ,
+phone varchar(200)not null ,
+gender enum('female','male') not null,
+primary key(memberID)
+);
+
 
 
 
