@@ -1,5 +1,7 @@
 package sample.controllers;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -8,9 +10,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Tab;
+import javafx.scene.control.*;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
@@ -22,6 +23,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import sample.repositories.DatabaseHandler;
 
+import javax.xml.transform.Result;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
@@ -30,6 +32,7 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -40,6 +43,13 @@ import java.util.logging.Logger;
 public class MainController implements Initializable {
 
     private static final String GitHub = "https://github.com/BlertaMecini/Library-Managment-System-KNK";
+
+    @FXML
+    private ListView<String> issueDataList;
+    @FXML
+    private TextField bookID;
+    @FXML
+    private TextField memberID;
     @FXML
     private  StackPane memberInfoContainer;
     @FXML
@@ -56,11 +66,7 @@ public class MainController implements Initializable {
     @FXML
     private Text authorName;
     @FXML
-    private HBox book_info;
-    @FXML
     private Text availability;
-    @FXML
-    private HBox member_info;
     @FXML
     private TextField memberIdInput;
     @FXML
@@ -70,17 +76,14 @@ public class MainController implements Initializable {
     @FXML
     private StackPane rootPane;
 
-    @FXML
-    private Tab BookIssueTab;
 
-    @Override
+   @Override
     public void initialize(URL rl, ResourceBundle rb) {
         databaseHandler = DatabaseHandler.getInstance();
+        initGraph();
+   }
 
-        initGraph(); 
-    }
-
-    // Showing the graphs 
+    // Showing the graphs
     private void initGraph() {
 
         bookChart = new PieChart(databaseHandler.getBookGraphicStatistics());
@@ -107,7 +110,7 @@ public class MainController implements Initializable {
             memberChart.setOpacity(0);
         }
     }
-    
+
 
     // Loading the corresponding windows when buttons are clicked
     // Need to change location to real ones for view members,books,issued books
@@ -407,6 +410,200 @@ public class MainController implements Initializable {
         clearMembercache();
     }
 
+    // Clearing the info
+    private void clearOnSubmissionIssueEntries(){
+        bookID.clear();
+        memberID.clear();
+        issueDataList.getItems().clear();
+    }
+
+
+    // Submission tab
+
+    boolean isReadyForSubmission=false;
+
+    @FXML
+    private void loadBookInfo2(ActionEvent event) {
+
+        ObservableList<String> issueData = FXCollections.observableArrayList();
+
+        String id = bookID.getText();
+        String mid=memberID.getText();
+        if( !id.isEmpty() && !mid.isEmpty()) {
+
+            String qu = "SELECT * FROM issuedBooks WHERE bookID = '" + id + "' and memberID='" + mid + "'";
+
+            ResultSet rs = databaseHandler.execQuery(qu);
+
+            try {
+                if(!rs.next()){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("ERROR");
+                    alert.setHeaderText(null);
+                    alert.setContentText("The book with ID: "+ id + " wasn't issued to member with  ID: " + mid +" !");
+                    alert.showAndWait();
+                    clearOnSubmissionIssueEntries();
+                    return;
+                }
+                while (rs.next()) {
+                    String mBookID = id;
+                    String mMemberID = mid;
+                    Timestamp mIssueTime = rs.getTimestamp("issueTime");
+                    int mRenewCount = rs.getInt("renew_count");
+
+
+                    issueData.add("Issue Information:- ");
+
+                    issueData.add("Issue Date and Time: " + mIssueTime.toString());
+                    issueData.add("Renew Count: " + mRenewCount);
+
+                    issueData.add("Book Information:- ");
+
+                    String query = "SELECT * FROM addBook WHERE id = '" + mBookID + "'";
+                    ResultSet r1 = databaseHandler.execQuery(query);
+
+
+                    while (r1.next()) {
+
+                        issueData.add("Book Name: " + r1.getString("title"));
+                        issueData.add("Book ID: " + r1.getString("id"));
+                        issueData.add("Book Author: " + r1.getString("author"));
+                        issueData.add("Book Publisher: " + r1.getString("publisher"));
+                    }
+
+                    String qu1 = "SELECT * FROM addMember WHERE memberID = '" + mMemberID + "'";
+                    ResultSet r2 = databaseHandler.execQuery(qu1);
+                    issueData.add("Member Information:- ");
+
+                    while (r2.next()) {
+
+                        issueData.add("Name: " + r2.getString("name"));
+                        issueData.add("Mobile: " + r2.getString("mobile"));
+                        issueData.add("Email: " + r2.getString("email"));
+                    }
+
+                }
+
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+
+            isReadyForSubmission = true;
+            issueDataList.getItems().setAll(issueData);
+        }
+        else{
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setHeaderText(null);
+            alert.setContentText("You must select Book ID and Member ID to view the information!");
+            alert.showAndWait();
+            clearOnSubmissionIssueEntries();
+        }
+
+    }
+
+
+
+// Submission and renewal
+
+    @FXML
+    private void loadOnSubmissionOp(ActionEvent event) {
+
+        if (!isReadyForSubmission) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Failed");
+            alert.setHeaderText(null);
+            alert.setContentText("Please Select A Book To Submit!");
+            alert.showAndWait();
+            return;
+        }
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirm Submission Operation");
+        alert.setHeaderText(null);
+        alert.setContentText("Are you sure you want to return the book ?");
+        Optional<ButtonType> response = alert.showAndWait();
+        if (response.get() == ButtonType.OK) {
+
+            String id = bookID.getText();
+            String mid=memberID.getText();
+            String ac1 = " DELETE FROM issuedBooks WHERE bookID = '" + id + "' and memberID = '" + mid + "'";
+            String ac2 = "UPDATE addBook SET quantity = quantity-1 WHERE id= '" + id + "'";
+
+            if (databaseHandler.execAction(ac1) && databaseHandler.execAction(ac2)) {
+                Alert confirmAlert = new Alert(Alert.AlertType.INFORMATION);
+                confirmAlert.setTitle("Success");
+                confirmAlert.setHeaderText(null);
+                confirmAlert.setContentText("Book Has Been Submitted!");
+                confirmAlert.showAndWait();
+                clearOnSubmissionIssueEntries();
+            } else {
+                Alert alert1 = new Alert(Alert.AlertType.ERROR);
+                alert1.setTitle("Failed");
+                alert1.setHeaderText(null);
+                alert1.setContentText("Submission Has Been Failed!");
+                alert1.showAndWait();
+                clearOnSubmissionIssueEntries();
+            }
+
+        }else{
+            Alert  canceledAlert = new Alert(Alert.AlertType.INFORMATION);
+            canceledAlert.setTitle("Canceled");
+            canceledAlert.setHeaderText(null);
+            canceledAlert.setContentText("Submission Operation canceled!");
+            canceledAlert.showAndWait();
+            clearOnSubmissionIssueEntries();
+        }
+    }
+
+
+    @FXML
+    private void loadRenewOp(ActionEvent event){
+
+        if (!isReadyForSubmission) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Failed");
+            alert.setHeaderText(null);
+            alert.setContentText("Please Select A Book To Renew!");
+            alert.showAndWait();
+            return;
+        }
+
+        Alert alert1 = new Alert(Alert.AlertType.CONFIRMATION);
+        alert1.setTitle("Confirm Renew Operation");
+        alert1.setHeaderText(null);
+        alert1.setContentText("Are you sure you want to renew the book ?");
+        Optional<ButtonType> response = alert1.showAndWait();
+        if (response.get() == ButtonType.OK){
+            String ac ="UPDATE issuedBooks SET issueTime = CURRENT_TIMESTAMP,renew_count = renew_count+1 WHERE bookID = '" +bookID.getText() + "'";
+            System.out.println(ac);
+            if(databaseHandler.execAction(ac)){
+
+                Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
+                alert2.setTitle("Success");
+                alert2.setHeaderText(null);
+                alert2.setContentText("Book has been renewed!");
+                alert2.showAndWait();
+                clearOnSubmissionIssueEntries();
+
+            }else {
+                Alert alert3 = new Alert(Alert.AlertType.ERROR);
+                alert3.setTitle("Failed");
+                alert3.setHeaderText(null);
+                alert3.setContentText("Renew Has Been Failed!");
+                alert3.showAndWait();
+                clearOnSubmissionIssueEntries();
+            } }else{
+            Alert alert4 = new Alert(Alert.AlertType.INFORMATION);
+            alert4.setTitle("Canceled");
+            alert4.setHeaderText(null);
+            alert4.setContentText("Renew Operation canceled!");
+            alert4.showAndWait();
+            clearOnSubmissionIssueEntries();
+        }
+    }
+
+
     // Logging the admin out if he clicks the log out menu item
     @FXML
     private void handleMenuLogOut(ActionEvent actionEvent) throws IOException {
@@ -451,4 +648,5 @@ public class MainController implements Initializable {
             }
         }
 
-    }
+
+}
