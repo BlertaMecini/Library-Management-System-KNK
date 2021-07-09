@@ -1,7 +1,9 @@
 package sample.repositories;
 
+import com.mysql.cj.protocol.Resultset;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.chart.PieChart;
 
 import javax.swing.*;
 import java.sql.*;
@@ -13,21 +15,18 @@ public final  class DatabaseHandler {
     // Variables used for connecting to the database and creating statements
     // Change these values to your mySQL values
     private static DatabaseHandler handler=null;
-    private static String databaseName="admin";
-    private static String userName="root";
-    private static String password="1111";
+    private static final String databaseName="admin";
     private static final String DB_URL="jdbc:mysql://127.0.0.1/"+ databaseName;
 
     private static Connection conn=null;
     private static Statement stmt=null;
 
 
-    // Constructor of the class has methods that are called when the class is instanciated
+    // Constructor of the class has methods that are called when the class is instantiated
     public DatabaseHandler(){
         createConnection();
         setupBookTable();
         setupIssuedBooksTable();
-        setupMemberTable();
     }
 
     // If there is no instance of the class we get the instance
@@ -39,17 +38,19 @@ public final  class DatabaseHandler {
     }
 
 
-    // Conneting to the database
+    // Connecting to the database
     void createConnection(){
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(DB_URL,userName, password);
+            String password = "error404";
+            String userName = "root";
+            conn = DriverManager.getConnection(DB_URL, userName, password);
         }
         catch (Exception ex){
             ex.printStackTrace();
         }
     }
-    // Setting up the table to add books, or this can be done manyally in mySQL
+    // Setting up the table to add books, or this can be done manually in mySQL
     void setupBookTable(){
         String TABLE_NAME="addBook";
         try{
@@ -64,7 +65,7 @@ public final  class DatabaseHandler {
                         + " title varchar(200) not null ,"
                         + " author varchar(200) not null ,"
                         + " publisher varchar(200) not null ,"
-                        + " quantity int not nulll ,"
+                        + " quantity int not null ,"
                         + " isAvail boolean default true,"
                         + " primary key(id)"
                         +")");
@@ -99,28 +100,6 @@ public final  class DatabaseHandler {
             System.err.println(ex.getMessage()+ " ...setupDatabase");
         }
     }
-    void setupMemberTable(){
-        String TABLE_NAME="addBook";
-        try{
-            stmt=conn.createStatement();
-            DatabaseMetaData dbm=conn.getMetaData();
-            ResultSet tables=dbm.getTables(null,null,TABLE_NAME,null);
-            if(tables.next()){
-                System.out.println("Table "+TABLE_NAME+ " already exists.");
-            } else{
-                stmt.execute("CREATE TABLE"+TABLE_NAME+"("
-                        + " memberID varchar(200) not null ,"
-                        + " name varchar(200) not null ,"
-                        + " email varchar(200) not null ,"
-                        + " phone varchar(200) not null ,"
-                        + " gender enum('male','female'),"
-                        + " primary key(memberID)"
-                        +")");
-            }
-        } catch (SQLException ex){
-            System.err.println(ex.getMessage()+ " ...setupDatabase");
-        }
-    }
 
     // A method that returns a ResultSet, this is used to execute queries
     public ResultSet execQuery(String query) {
@@ -137,7 +116,7 @@ public final  class DatabaseHandler {
         return result;
     }
 
-    // A method that returns boolean values, used to inform if the action was succesfully executed
+    // A method that returns boolean values, used to inform if the action was successfully executed
     public boolean execAction(String qu) {
         try {
             stmt = conn.createStatement();
@@ -145,10 +124,63 @@ public final  class DatabaseHandler {
             return true;
         }
         catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Error:" + ex.getMessage(), "Error Occured", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error:" + ex.getMessage(), "Error Occurred", JOptionPane.ERROR_MESSAGE);
             System.out.println("Exception at execQuery:dataHandler " + ex.getLocalizedMessage());
             return false;
         }
     }
 
+    // Graphs
+    public ObservableList<PieChart.Data> getBookGraphicStatistics(){
+        ObservableList<PieChart.Data> data= FXCollections.observableArrayList();
+        try {
+            String query1="SELECT COUNT(*) FROM addBook";
+            String query2="SELECT COUNT(*) FROM issuedBooks";
+
+            ResultSet rs=execQuery(query1);
+            if(rs.next()){
+                int count=rs.getInt(1);
+                data.add(new PieChart.Data("Total Books (" +  count + ")",count));
+            }
+
+            ResultSet rs2=execQuery(query2);
+            if(rs2.next()){
+                int count=rs2.getInt(1);
+                data.add(new PieChart.Data("Issued Copies Of Books (" +  count + ")",count));
+            }
+
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return data;
+
+    }
+
+
+    public ObservableList<PieChart.Data> getMemberGraphicStatistics(){
+        ObservableList<PieChart.Data> data= FXCollections.observableArrayList();
+        try {
+            String query1="SELECT COUNT(*) FROM addMember";
+            String query2="SELECT COUNT(DISTINCT memberID) FROM issuedBooks";
+
+            ResultSet rs=execQuery(query1);
+            if(rs.next()){
+                int count=rs.getInt(1);
+                data.add(new PieChart.Data("Total Members (" +  count + ")",count));
+            }
+
+            ResultSet rs2=execQuery(query2);
+            if(rs2.next()){
+                int count=rs2.getInt(1);
+                data.add(new PieChart.Data("Members With Books (" +  count + ")",count));
+            }
+
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return data;
+
+    }
 }

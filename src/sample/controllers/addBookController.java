@@ -69,6 +69,7 @@ public class addBookController implements Initializable {
         String bookQuantity = quantity.getText();
         boolean onlyDigits = onlyDigits(bookId, bookId.length());
 
+
         // Validating the fields
         if (bookId.isEmpty() || bookAuthor.isEmpty() || bookName.isEmpty() || bookPublisher.isEmpty() || bookQuantity.isEmpty() || !check.isSelected()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -115,7 +116,7 @@ public class addBookController implements Initializable {
         if (databaseHandler.execAction(qu)) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setHeaderText("SUCCESS");
-            alert.setContentText("New book succesfully added!");
+            alert.setContentText("New book successfully added!");
             alert.showAndWait();
             clear();
 
@@ -129,7 +130,7 @@ public class addBookController implements Initializable {
         }
     }
 
-    // Clearing the fileds after save button is clicked
+    // Clearing the fields after save button is clicked
     void clear() {
         id.setText("");
         title.setText("");

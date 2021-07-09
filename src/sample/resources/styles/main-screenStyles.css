@@ -46,7 +46,7 @@
 
 
 .setup-button {
--fx-background.color:gray;
+-fx-background-color:gray;
 -fx-text-fill: #000000;
 -fx-font-weight:bold;
 }
@@ -74,11 +74,21 @@
 }
 
 
+.data0.chart-pie { -fx-pie-color: teal; }
+.data1.chart-pie { -fx-pie-color: cyan; }
 
+/*.chart {
+    -fx-pref-width: 150;
+    -fx-pref-height: 150;
+    -fx-min-width: 150;
+    -fx-min-height: 150;
+    -fx-max-width: 150;
+    -fx-max-height: 150;
+}
 
-
-
-
+.chart-content {
+    -fx-padding: 10;
+}*/
 
 
 
