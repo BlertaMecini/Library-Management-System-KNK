@@ -39,7 +39,7 @@ public class addBookController implements Initializable {
     @FXML
     private CheckBox check;
 
-
+    private Boolean isInEditMode = Boolean.FALSE;
 
     public static boolean onlyDigits(String str, int n) {
         for (int i = 1; i < n; i++) {
@@ -69,7 +69,10 @@ public class addBookController implements Initializable {
         String bookQuantity = quantity.getText();
         boolean onlyDigits = onlyDigits(bookId, bookId.length());
 
-
+        if(isInEditMode){
+            handleEditOperation();
+            return;
+        }
         // Validating the fields
         if (bookId.isEmpty() || bookAuthor.isEmpty() || bookName.isEmpty() || bookPublisher.isEmpty() || bookQuantity.isEmpty() || !check.isSelected()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -130,6 +133,22 @@ public class addBookController implements Initializable {
         }
     }
 
+    private void handleEditOperation() {
+        booklistController.Book book = new booklistController.Book(id.getText(),title.getText(),author.getText(),publisher.getText(), quantity.anchorProperty().getValue(), true);
+        if(databaseHandler.updateBook(book)){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setHeaderText("SUCCESS");
+            alert.setContentText("Success! Book updated");
+            alert.showAndWait();
+            clear();
+        }else{
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Error");
+            alert.setContentText("Failed ! Book can not be updated");
+            alert.showAndWait();
+            clear();
+        }
+    }
     // Clearing the fields after save button is clicked
     void clear() {
         id.setText("");
@@ -144,6 +163,21 @@ public class addBookController implements Initializable {
     @FXML
     private void cancelAction(ActionEvent actionEvent) {
         ((Stage) rootPane.getScene().getWindow()).close();
+    }
+
+    public void inflatedBUI (booklistController.Book book){
+
+        id.setText(book.getBookID());
+        author.setText(book.getAuthor());
+        publisher.setText(book.getPublisher());
+        title.setText(book.getTitle());
+        quantity.setText(book.getQuantity().toString());
+
+        isInEditMode = Boolean.TRUE;
+
+        id.setEditable(false);
+
+
     }
 
 }

@@ -4,6 +4,7 @@ package sample.repositories;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.PieChart;
+import sample.controllers.booklistController;
 import sample.controllers.viewMembersController;
 
 import javax.swing.*;
@@ -199,6 +200,20 @@ public final  class DatabaseHandler {
         }
         return false;
     }
+    public boolean deleteBook(booklistController.Book book){
+        try {
+            String deleteStatement = "Delete from addBook where id = ?";
+            PreparedStatement stmt = conn.prepareStatement(deleteStatement);
+            stmt.setString(1,book.getBookID());
+            int res = stmt.executeUpdate();
+            if(res ==1){
+                return true;
+            }
+        }catch (SQLException ex){
+            //Logger.getLogger(DatabaseHandler.class.getName().log(Level.SEVERE,null,ex));
+        }
+        return false;
+    }
     public boolean updateMember(viewMembersController.Member member){
         String update = "UPDATE addMember SET name =? , email = ? , phone = ? where memberID = ?";
         try {
@@ -207,6 +222,26 @@ public final  class DatabaseHandler {
             stmt.setString(2,member.getEmail());
             stmt.setString(3,member.getPhone());
             stmt.setString(4,member.getMemberID());
+
+
+            int res = stmt.executeUpdate();
+
+            return (res > 0);
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return false;
+    }
+    public boolean updateBook(booklistController.Book book){
+        String update = "UPDATE addBook SET title =? , author = ? , publisher = ?,quantity = ? where id = ?";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(update);
+            stmt.setString(1,book.getTitle());
+            stmt.setString(2,book.getAuthor());
+            stmt.setString(3,book.getPublisher());
+            stmt.setInt(4,book.getQuantity());
+            stmt.setString(5,book.getBookID());
 
 
             int res = stmt.executeUpdate();

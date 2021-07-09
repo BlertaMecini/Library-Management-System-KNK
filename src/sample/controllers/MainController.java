@@ -1,7 +1,6 @@
 package sample.controllers;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -34,10 +33,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -134,7 +131,7 @@ public class MainController implements Initializable {
 
     @FXML
     private void loadViewBooks(javafx.event.ActionEvent actionEvent) {
-        loadWindow("/sample/views/viewBooks.fxml", "Book list");
+        loadWindow("/sample/views/booklist.fxml", "Book list");
     }
 
     @FXML
@@ -273,12 +270,12 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleViewBooks(javafx.event.ActionEvent actionEvent) {
-        loadWindow("/sample/views/viewBooks.fxml", "View Books");
+        loadWindow("/sample/views/booklist.fxml", "View Books");
     }
 
     @FXML
     private void handleViewIssuedBooks(ActionEvent actionEvent) {
-        loadWindow("/sample/views/issuedBooks.fxml", "View Issued Books");
+        loadWindow("/sample/views/addMember.fxml", "View Issued Books");
     }
 
     @FXML
@@ -427,12 +424,14 @@ public class MainController implements Initializable {
 
     @FXML
     private void loadBookInfo2(ActionEvent event) {
-        ObservableList<String> issueData= FXCollections.observableArrayList();
+
+        ObservableList<String> issueData = FXCollections.observableArrayList();
 
         String id = bookID.getText();
         String mid=memberID.getText();
         if( !id.isEmpty() && !mid.isEmpty()) {
-            String qu = "SELECT * FROM issuedBooks WHERE bookID= '" + id + "' and memberID='" + mid + "'";
+
+            String qu = "SELECT * FROM issuedBooks WHERE bookID = '" + id + "' and memberID='" + mid + "'";
 
             ResultSet rs = databaseHandler.execQuery(qu);
 
@@ -447,11 +446,10 @@ public class MainController implements Initializable {
                     return;
                 }
                 while (rs.next()) {
-
                     String mBookID = id;
                     String mMemberID = mid;
                     Timestamp mIssueTime = rs.getTimestamp("issueTime");
-                    String mRenewCount = String.valueOf(rs.getInt("renew_count"));
+                    int mRenewCount = rs.getInt("renew_count");
 
 
                     issueData.add("Issue Information:- ");
@@ -461,8 +459,9 @@ public class MainController implements Initializable {
 
                     issueData.add("Book Information:- ");
 
-                    String query = "SELECT * FROM addBook WHERE id= '" + mBookID + "'";
+                    String query = "SELECT * FROM addBook WHERE id = '" + mBookID + "'";
                     ResultSet r1 = databaseHandler.execQuery(query);
+
 
                     while (r1.next()) {
 
@@ -485,11 +484,11 @@ public class MainController implements Initializable {
 
                 }
 
-
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
 
+            isReadyForSubmission = true;
             issueDataList.getItems().setAll(issueData);
         }
         else{

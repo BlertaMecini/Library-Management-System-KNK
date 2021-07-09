@@ -55,7 +55,7 @@ public class viewMembersController implements Initializable {
             return;
         }
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Deleting Book");
+        alert.setTitle("Deleting Member");
         alert.setContentText("Are you sure you want to delete" + selectedForDeletion.getName()+"?");
         Optional<ButtonType> answer = alert.showAndWait();
 
