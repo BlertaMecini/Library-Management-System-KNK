@@ -3,14 +3,13 @@ package sample.controllers;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -21,6 +20,7 @@ import sample.repositories.DatabaseHandler;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 public class viewMembersController implements Initializable {
 
     DatabaseHandler databaseHandler ;
-
+    ObservableList<Member> list = FXCollections.observableArrayList();
     @FXML
     private TableView<Member> tableView;
     @FXML
@@ -41,6 +41,45 @@ public class viewMembersController implements Initializable {
     private TableColumn<Member, String> phoneColumn;
     @FXML
     private TableColumn<Member, String> genderColumn;
+
+    public void deleteMemberOption(ActionEvent actionEvent) {
+        //Fetch the selected row
+        Member selectedForDeletion = tableView.getSelectionModel().getSelectedItem();
+        if (selectedForDeletion == null) {
+            //AlertMaker.showErrorMessage("No member selected", "Please select a member for deletion.");
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("ERROR");
+            alert.setContentText("No member selected ! Please select a member for deletion.");
+            alert.showAndWait();
+            return;
+        }
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Deleting Book");
+        alert.setContentText("Are you sure you want to delete" + selectedForDeletion.getName()+"?");
+        Optional<ButtonType> answer = alert.showAndWait();
+
+        if(answer.get() == ButtonType.OK){
+            //Delete Member
+            Boolean result = DatabaseHandler.getInstance().deleteMember(selectedForDeletion);
+            if(result){
+                Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
+                alert2.setHeaderText("SUCCESS");
+                alert2.setContentText("Member Deleted!");
+                alert2.showAndWait();
+                list.remove(selectedForDeletion);
+            }else{
+                Alert alert3 = new Alert(Alert.AlertType.ERROR);
+                alert3.setHeaderText("Error");
+                alert3.setContentText("Member could not be Deleted!");
+                alert3.showAndWait();
+            }
+        }else{
+            Alert alert1 = new Alert(Alert.AlertType.ERROR);
+            alert1.setHeaderText("ERROR");
+            alert1.setContentText("Deletion Cancelled");
+            alert1.showAndWait();
+        }
+    }
 
     public static class Member {
         private final SimpleStringProperty memberID;
@@ -94,7 +133,6 @@ public class viewMembersController implements Initializable {
         genderColumn.setCellValueFactory(new PropertyValueFactory<>("gender"));
     }
     private void loadData() {
-        ObservableList<Member> list = FXCollections.observableArrayList();
         DatabaseHandler handler = DatabaseHandler.getInstance();
         String qu = "SELECT * FROM addMember";
         ResultSet rs = handler.execQuery(qu);
@@ -115,10 +153,12 @@ public class viewMembersController implements Initializable {
 
         tableView.setItems(list);
     }
+
     @FXML
     private void addNewMember(javafx.event.ActionEvent actionEvent) {
         loadWindow("/sample/views/addMember.fxml", "Add Member");
     }
+
 
 
 

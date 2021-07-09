@@ -3,12 +3,13 @@
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controllers.viewMembersController">
    <top>
@@ -27,6 +28,13 @@
             <URL value="@../resources/styles/addmember.css" />
             <URL value="@../resources/styles/addmember.css" />
          </stylesheets>
+         <contextMenu>
+            <ContextMenu>
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#deleteMemberOption" text="Delete Member" />
+              </items>
+            </ContextMenu>
+         </contextMenu>
       </TableView>
    </top>
    <center>
@@ -35,16 +43,6 @@
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" stylesheets="@../resources/styles/addmember.css">
                <children>
                   <Button fx:id="addNewBtn" mnemonicParsing="false" onAction="#addNewMember" prefHeight="60.0" prefWidth="160.0" styleClass="viewMemberBtn" text="Add New">
-                     <HBox.margin>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="20.0" />
-                     </HBox.margin>
-                  </Button>
-                  <Button fx:id="editBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="60.0" prefWidth="160.0" styleClass="viewMemberBtn" text="Edit">
-                     <HBox.margin>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="20.0" />
-                     </HBox.margin>
-                  </Button>
-                  <Button fx:id="deleteBtn" mnemonicParsing="false" prefHeight="60.0" prefWidth="160.0" styleClass="viewMemberBtn" text="Delete">
                      <HBox.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="20.0" />
                      </HBox.margin>
