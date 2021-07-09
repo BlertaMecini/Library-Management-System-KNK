@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="rootPane" prefHeight="490.0" prefWidth="622.0" styleClass="addMemberBtn" stylesheets="@../resources/styles/addmember.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controllers.issuedBooksController">
+   <children>
+      <TableView fx:id="tableView" layoutX="-2.0" layoutY="34.0" prefHeight="456.0" prefWidth="622.0" stylesheets="@../resources/styles/addmember.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
+        <columns>
+          <TableColumn fx:id="BookIDCol" prefWidth="75.0" text="Book-ID" />
+          <TableColumn fx:id="MemberCol" prefWidth="75.0" text="MemberId" />
+            <TableColumn fx:id="TimeCol" prefWidth="75.0" text="IssueTime" />
+            <TableColumn fx:id="RenewCol" prefWidth="75.0" text="ReNewCount" />
+        </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+   </children>
+</AnchorPane>
