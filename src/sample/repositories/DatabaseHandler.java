@@ -1,5 +1,8 @@
 package sample.repositories;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import javax.swing.*;
 import java.sql.*;
 
@@ -12,7 +15,7 @@ public final  class DatabaseHandler {
     private static DatabaseHandler handler=null;
     private static String databaseName="admin";
     private static String userName="root";
-    private static String password="1957";
+    private static String password="1111";
     private static final String DB_URL="jdbc:mysql://127.0.0.1/"+ databaseName;
 
     private static Connection conn=null;
@@ -24,6 +27,7 @@ public final  class DatabaseHandler {
         createConnection();
         setupBookTable();
         setupIssuedBooksTable();
+        setupMemberTable();
     }
 
     // If there is no instance of the class we get the instance
@@ -59,7 +63,7 @@ public final  class DatabaseHandler {
                         + " id varchar(200) not null ,"
                         + " title varchar(200) not null ,"
                         + " author varchar(200) not null ,"
-                        + " publisher varchar(200) not nulll ,"
+                        + " publisher varchar(200) not null ,"
                         + " quantity int not nulll ,"
                         + " isAvail boolean default true,"
                         + " primary key(id)"
@@ -95,6 +99,28 @@ public final  class DatabaseHandler {
             System.err.println(ex.getMessage()+ " ...setupDatabase");
         }
     }
+    void setupMemberTable(){
+        String TABLE_NAME="addBook";
+        try{
+            stmt=conn.createStatement();
+            DatabaseMetaData dbm=conn.getMetaData();
+            ResultSet tables=dbm.getTables(null,null,TABLE_NAME,null);
+            if(tables.next()){
+                System.out.println("Table "+TABLE_NAME+ " already exists.");
+            } else{
+                stmt.execute("CREATE TABLE"+TABLE_NAME+"("
+                        + " memberID varchar(200) not null ,"
+                        + " name varchar(200) not null ,"
+                        + " email varchar(200) not null ,"
+                        + " phone varchar(200) not null ,"
+                        + " gender enum('male','female'),"
+                        + " primary key(memberID)"
+                        +")");
+            }
+        } catch (SQLException ex){
+            System.err.println(ex.getMessage()+ " ...setupDatabase");
+        }
+    }
 
     // A method that returns a ResultSet, this is used to execute queries
     public ResultSet execQuery(String query) {
@@ -124,4 +150,5 @@ public final  class DatabaseHandler {
             return false;
         }
     }
+
 }

@@ -12,13 +12,13 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controllers.viewMembersController">
    <top>
-      <TableView prefHeight="294.0" prefWidth="600.0" styleClass="columns" BorderPane.alignment="CENTER">
+      <TableView fx:id="tableView" prefHeight="294.0" prefWidth="600.0" styleClass="columns" BorderPane.alignment="CENTER">
         <columns>
-          <TableColumn fx:id="memberID" editable="false" prefWidth="75.0" styleClass="tablecolumn" text="MemberID" />
-          <TableColumn fx:id="name" prefWidth="75.0" styleClass="tablecolumn" text="Name" />
-            <TableColumn fx:id="email" prefWidth="75.0" styleClass="tablecolumn" text="Email" />
-            <TableColumn fx:id="phone" prefWidth="75.0" styleClass="tablecolumn" text="Phone" />
-            <TableColumn fx:id="gender" prefWidth="75.0" styleClass="tablecolumn" text="Gender" />
+          <TableColumn fx:id="idColumn" editable="false" prefWidth="75.0" styleClass="tablecolumn" text="MemberID" />
+          <TableColumn fx:id="nameColumn" prefWidth="75.0" styleClass="tablecolumn" text="Name" />
+            <TableColumn fx:id="emailColumn" prefWidth="75.0" styleClass="tablecolumn" text="Email" />
+            <TableColumn fx:id="phoneColumn" prefWidth="75.0" styleClass="tablecolumn" text="Phone" />
+            <TableColumn fx:id="genderColumn" prefWidth="75.0" styleClass="tablecolumn" text="Gender" />
         </columns>
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
