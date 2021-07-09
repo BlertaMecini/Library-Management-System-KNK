@@ -13,7 +13,7 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controllers.viewMembersController">
    <top>
-      <TableView fx:id="tableView" prefHeight="294.0" prefWidth="600.0" styleClass="columns" BorderPane.alignment="CENTER">
+      <TableView fx:id="tableView" prefHeight="335.0" prefWidth="600.0" styleClass="columns" BorderPane.alignment="CENTER">
         <columns>
           <TableColumn fx:id="idColumn" editable="false" prefWidth="75.0" styleClass="tablecolumn" text="MemberID" />
           <TableColumn fx:id="nameColumn" prefWidth="75.0" styleClass="tablecolumn" text="Name" />
@@ -32,6 +32,7 @@
             <ContextMenu>
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#deleteMemberOption" text="Delete Member" />
+                  <MenuItem mnemonicParsing="false" onAction="#editMemberOption" text="Edit Member" />
               </items>
             </ContextMenu>
          </contextMenu>
@@ -40,11 +41,16 @@
    <center>
       <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" stylesheets="@../resources/styles/addmember.css">
+            <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" stylesheets="@../resources/styles/addmember.css">
                <children>
-                  <Button fx:id="addNewBtn" mnemonicParsing="false" onAction="#addNewMember" prefHeight="60.0" prefWidth="160.0" styleClass="viewMemberBtn" text="Add New">
+                  <Button fx:id="addNewBtn" mnemonicParsing="false" onAction="#addNewMember" prefHeight="16.0" prefWidth="103.0" styleClass="viewMemberBtn" text="Add New">
                      <HBox.margin>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="20.0" />
+                        <Insets />
+                     </HBox.margin>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#handleRefresh" prefHeight="28.0" prefWidth="103.0" styleClass="viewMemberBtn" text="Refresh">
+                     <HBox.margin>
+                        <Insets right="20.0" />
                      </HBox.margin>
                   </Button>
                </children>

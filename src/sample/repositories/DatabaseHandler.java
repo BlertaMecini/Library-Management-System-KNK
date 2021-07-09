@@ -40,7 +40,6 @@ public final  class DatabaseHandler {
         return handler;
     }
 
-
     // Connecting to the database
     void createConnection(){
         try{
@@ -199,6 +198,24 @@ public final  class DatabaseHandler {
             //Logger.getLogger(DatabaseHandler.class.getName().log(Level.SEVERE,null,ex));
         }
         return false;
+    }
+    public boolean updateMember(viewMembersController.Member member){
+        String update = "UPDATE addMember SET name =? , email = ? , phone = ? where memberID = ?";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(update);
+            stmt.setString(1,member.getName());
+            stmt.setString(2,member.getEmail());
+            stmt.setString(3,member.getPhone());
+            stmt.setString(4,member.getMemberID());
 
+
+            int res = stmt.executeUpdate();
+
+            return (res > 0);
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return false;
     }
 }

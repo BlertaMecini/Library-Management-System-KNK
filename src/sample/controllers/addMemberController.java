@@ -11,7 +11,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import sample.repositories.DatabaseHandler;
 
+import java.lang.reflect.Member;
 import java.net.URL;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 
@@ -37,6 +39,9 @@ public class addMemberController implements Initializable {
     private Button saveBtn;
     @FXML
     private Button cancelBtn;
+
+    private Boolean isInEditMode = Boolean.FALSE;
+
     public static boolean onlyDigits(String str, int n) {
         for (int i = 1; i < n; i++) {
 
@@ -71,6 +76,10 @@ public class addMemberController implements Initializable {
         }
         ;
 
+        if(isInEditMode){
+            handleEditOperation();
+            return;
+        }
 
         if (mID.isEmpty() || mName.isEmpty() || mEmail.isEmpty() || mPhone.isEmpty() || mGender.isEmpty()){
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -124,6 +133,24 @@ public class addMemberController implements Initializable {
         }
     }
 
+    private void handleEditOperation() {
+        String gender = "female";
+        viewMembersController.Member member = new viewMembersController.Member(memberID.getText(),name.getText(),email.getText(),phone.getText(), gender);
+        if(databaseHandler.updateMember(member)){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setHeaderText("SUCCESS");
+            alert.setContentText("Success! Member updated");
+            alert.showAndWait();
+            clear();
+        }else{
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Error");
+            alert.setContentText("Failed ! Member can not be updated");
+            alert.showAndWait();
+            clear();
+        }
+    }
+
     // Clearing the window after the save button is clicked
     public void clear() {
         memberID.setText("");
@@ -138,6 +165,24 @@ public class addMemberController implements Initializable {
     @FXML
     private void cancelButton(ActionEvent actionEvent) {
         ((Stage) rootPane.getScene().getWindow()).close();
+    }
+
+    public void inflatedUI (viewMembersController.Member member){
+        String gender = member.getGender();
+        memberID.setText(member.getMemberID());
+        name.setText(member.getName());
+        email.setText(member.getEmail());
+        phone.setText(member.getPhone());
+        memberID.setEditable(false);
+        isInEditMode = Boolean.TRUE;
+        female.setSelected(true);
+        if(gender.toLowerCase() == "male"){
+            male.setSelected(true);
+        }else if (gender.toLowerCase() == "female"){
+            female.setSelected(true);
+        }
+
+
     }
 
 }

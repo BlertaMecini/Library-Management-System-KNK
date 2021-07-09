@@ -17,6 +17,7 @@ import javafx.stage.StageStyle;
 import sample.repositories.DatabaseConnection;
 import sample.repositories.DatabaseHandler;
 
+import java.awt.Label;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
@@ -81,6 +82,38 @@ public class viewMembersController implements Initializable {
         }
     }
 
+    public void editMemberOption(ActionEvent actionEvent) {
+        Member selectedForEdit = tableView.getSelectionModel().getSelectedItem();
+
+        if (selectedForEdit == null) {
+            //AlertMaker.showErrorMessage("No member selected", "Please select a member for deletion.");
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("ERROR");
+            alert.setContentText("No member selected ! Please select a member for edit-ing.");
+            alert.showAndWait();
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/sample/views/addMember.fxml"));
+
+            Parent parent = loader.load();
+
+            addMemberController controller = (addMemberController) loader.getController();
+            controller.inflatedUI(selectedForEdit);
+            Stage stage = new  Stage(StageStyle.DECORATED);
+            stage.setTitle("Edit Member");
+            stage.setScene(new Scene(parent));
+            stage.show();
+
+        } catch (IOException ex){
+            Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void handleRefresh(ActionEvent actionEvent) {
+        loadData();
+    }
+
     public static class Member {
         private final SimpleStringProperty memberID;
         private final SimpleStringProperty name ;
@@ -133,6 +166,7 @@ public class viewMembersController implements Initializable {
         genderColumn.setCellValueFactory(new PropertyValueFactory<>("gender"));
     }
     private void loadData() {
+        list.clear();
         DatabaseHandler handler = DatabaseHandler.getInstance();
         String qu = "SELECT * FROM addMember";
         ResultSet rs = handler.execQuery(qu);
@@ -158,8 +192,6 @@ public class viewMembersController implements Initializable {
     private void addNewMember(javafx.event.ActionEvent actionEvent) {
         loadWindow("/sample/views/addMember.fxml", "Add Member");
     }
-
-
 
 
     void loadWindow(String loc, String title) {
