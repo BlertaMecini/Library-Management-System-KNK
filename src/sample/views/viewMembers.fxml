@@ -43,7 +43,7 @@
          <children>
             <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" stylesheets="@../resources/styles/addmember.css">
                <children>
-                  <Button fx:id="addNewBtn" mnemonicParsing="false" onAction="#addNewMember" prefHeight="16.0" prefWidth="103.0" styleClass="viewMemberBtn" text="Add New">
+                  <Button fx:id="addNewBtn" mnemonicParsing="false" onAction="#addNewMember" prefHeight="28.0" prefWidth="103.0" styleClass="viewMemberBtn" text="Add New">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>

@@ -136,7 +136,7 @@ public class MainController implements Initializable {
 
     @FXML
     private void loadViewIssuedBooks(javafx.event.ActionEvent actionEvent) {
-        loadWindow("/sample/views/addMember.fxml", "Issued Books");
+        loadWindow("/sample/views/issuedBooks.fxml", "Issued Books");
     }
 
     // A method for loading windows
