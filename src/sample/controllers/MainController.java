@@ -131,7 +131,7 @@ public class MainController implements Initializable {
 
     @FXML
     private void loadViewBooks(javafx.event.ActionEvent actionEvent) {
-        loadWindow("/sample/views/addMember.fxml", "Book list");
+        loadWindow("/sample/views/booklist.fxml", "Book list");
     }
 
     @FXML
@@ -270,7 +270,7 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleViewBooks(javafx.event.ActionEvent actionEvent) {
-        loadWindow("/sample/views/addMember.fxml", "View Books");
+        loadWindow("/sample/views/booklist.fxml", "View Books");
     }
 
     @FXML
