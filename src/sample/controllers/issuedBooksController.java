@@ -1,6 +1,7 @@
 
         package sample.controllers;
 
+        import javafx.beans.property.SimpleIntegerProperty;
         import javafx.beans.property.SimpleStringProperty;
         import javafx.collections.FXCollections;
         import javafx.collections.ObservableList;
@@ -39,21 +40,23 @@ public class issuedBooksController implements Initializable {
     @FXML
     private TableColumn<IssuedBook, String> TimeCol;
     @FXML
-    private TableColumn<IssuedBook, String> RenewCol;
+    private TableColumn<IssuedBook, Integer> RenewCol;
+
+    ObservableList<IssuedBook> list = FXCollections.observableArrayList();
+
 
     public static class IssuedBook {
         private final SimpleStringProperty bookId;
-        private final SimpleStringProperty name;
+        private final SimpleStringProperty memberId;
         private final SimpleStringProperty issueTime;
-        private final SimpleStringProperty renew;
+        private final SimpleIntegerProperty renew;
 
 
-        public IssuedBook(String bookId, String name, String issueTime, String renew) {
+        public IssuedBook(String bookId, String memberId, String issueTime,Integer renew) {
             this.bookId = new SimpleStringProperty(bookId);
-            this.name = new SimpleStringProperty(name);
+            this.memberId = new SimpleStringProperty(memberId);
             this.issueTime = new SimpleStringProperty(issueTime);
-            this.renew = new SimpleStringProperty(renew);
-
+            this.renew = new SimpleIntegerProperty(renew);
 
         }
 
@@ -61,19 +64,17 @@ public class issuedBooksController implements Initializable {
             return bookId.get();
         }
 
-        public String getName() {
-            return name.get();
+        public String getMemberId() {
+            return memberId.get();
         }
 
-        public String getrenew() {
+        public Integer getRenew() {
             return renew.get();
         }
 
-        public String getissueTime() {
+        public String getIssueTime() {
             return issueTime.get();
         }
-
-
 
     }
 
@@ -85,26 +86,26 @@ public class issuedBooksController implements Initializable {
 
     private void initCol() {
         BookIDCol.setCellValueFactory(new PropertyValueFactory<>("bookId"));
-        MemberCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        MemberCol.setCellValueFactory(new PropertyValueFactory<>("memberId"));
         TimeCol.setCellValueFactory(new PropertyValueFactory<>("issueTime"));
         RenewCol.setCellValueFactory(new PropertyValueFactory<>("renew"));
 
     }
 
     private void loadData() {
-        ObservableList<IssuedBook> list = FXCollections.observableArrayList();
-        DatabaseHandler handler = DatabaseHandler.getInstance();
+        databaseHandler=DatabaseHandler.getInstance();
         String qu = "SELECT * FROM issuedBooks";
-        ResultSet rs = handler.execQuery(qu);
+        ResultSet rs = databaseHandler.execQuery(qu);
         try {
             while (rs.next()) {
-                String bookId = rs.getString("bookId");
-                String name = rs.getString("name");
-                String issueTime = rs.getString("issueTime");
-                String renew = rs.getString("renew");
+                String bookId = rs.getString("bookID");
+                String memberId = rs.getString("memberID");
+                Timestamp issuedTime=rs.getTimestamp("issueTime");
+                String issueTime = issuedTime.toString();
+                Integer  renew = rs.getInt("renew_count");
 
 
-                list.add(new IssuedBook(bookId, name, issueTime, renew));
+                list.add(new IssuedBook(bookId, memberId, issueTime, renew));
 
             }
         } catch (SQLException ex) {
