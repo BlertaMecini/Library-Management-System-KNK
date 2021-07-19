@@ -1,16 +1,15 @@
 # Komunikimi Njeri Kompjuter
 ## Zhvillimi i sistemit interaktiv për menaxhimin e punëve në bilbliotekën e FIEK-ut
 Ky është projekti i realizuar në kuadër të lëndës Komunikimi Njeri Kompjuter nga grupi 4 i studentëve të vitit të dytë në FIEK. 
-Në kuadër të këtij projekti kemi realizuar një sitem interaktiv për menaxhimin e punëve të një "mini-biblioteke". Ky sistem ka një GUI të thjeshtë dhe intuitiv që duket si në figurë e mëposhtme: 
+Në kuadër të këtij projekti kemi realizuar një sistem interaktiv për menaxhimin e punëve të një "mini-biblioteke". Ky sistem ka një GUI të thjeshtë dhe intuitiv që duket si në figurën e mëposhtme: 
 
 
 ![MainScreen](https://user-images.githubusercontent.com/74319048/126238320-07472fd9-ba9e-4c0d-9eac-e353406b0d87.jpg)
 
 
 
-
 ### Veglat e përdoruara
-Realizimi i këtij projekti është bërë në gjuhën programuese Java me librarinë JavaFX. 
+Realizimi i këtij projekti është bërë në gjuhën programuese Java dhe platformën JavaFX. 
 Po ashtu është përdorur edhe Scene Builder për realizimin e GUI, ndërsa si IDE është përdorur IntelliJ IDEA Community Edition. 
 
 
