@@ -3,10 +3,7 @@ package sample.controllers;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import sample.repositories.DatabaseHandler;
@@ -35,6 +32,8 @@ public class addMemberController implements Initializable {
     private RadioButton female;
     @FXML
     private RadioButton male;
+    @FXML
+    private CheckBox check;
     @FXML
     private Button saveBtn;
     @FXML
@@ -87,13 +86,22 @@ public class addMemberController implements Initializable {
             alert.setContentText("All fields are required. Please fill them out!");
             alert.showAndWait();
             return;
-        } else if (!mName.matches("^[a-zA-Z\\s]*$")) {
+        }
+        else if (!mID.matches("[0-9]+")) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("ERROR");
+            alert.setContentText("Member ID must contain only numbers!");
+            alert.showAndWait();
+            return;
+        }
+        else if (!mName.matches("^[a-zA-Z\\s]*$")) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText("ERROR");
             alert.setContentText("Name must contain only letters and whitespaces!");
             alert.showAndWait();
             return;
-        } else if (!mEmail.matches("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$")) {
+        }
+        else if (!mEmail.matches("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$")) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText("ERROR");
             alert.setContentText("The email you typed is not valid!");
@@ -159,6 +167,7 @@ public class addMemberController implements Initializable {
         phone.setText("");
         male.setSelected(false);
         female.setSelected(false);
+        check.setSelected(false);
     }
 
     // A method to close the window if user clicks the close button

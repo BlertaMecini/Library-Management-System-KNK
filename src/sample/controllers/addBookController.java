@@ -134,7 +134,7 @@ public class addBookController implements Initializable {
     }
 
     private void handleEditOperation() {
-        booklistController.Book book = new booklistController.Book(id.getText(),title.getText(),author.getText(),publisher.getText(), quantity.anchorProperty().getValue(), true);
+        booklistController.Book book = new booklistController.Book(id.getText(),title.getText(),author.getText(),publisher.getText(), Integer.parseInt(quantity.getText()), true);
         if(databaseHandler.updateBook(book)){
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setHeaderText("SUCCESS");

@@ -1,5 +1,7 @@
 package sample.controllers;
 
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -10,11 +12,10 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
-import javafx.scene.control.*;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
@@ -23,7 +24,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import sample.repositories.DatabaseHandler;
 
-import javax.xml.transform.Result;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
@@ -43,22 +43,21 @@ import java.util.logging.Logger;
 public class MainController implements Initializable {
 
     private static final String GitHub = "https://github.com/BlertaMecini/Library-Managment-System-KNK";
+    Connection conn;
+    DatabaseHandler databaseHandler;
+    PieChart bookChart;
+    PieChart memberChart;
+    ObservableList<Issue> issueData = FXCollections.observableArrayList();
+    boolean isReadyForSubmission = false;
 
-    @FXML
-    private ListView<String> issueDataList;
     @FXML
     private TextField bookID;
     @FXML
     private TextField memberID;
     @FXML
-    private  StackPane memberInfoContainer;
+    private StackPane memberInfoContainer;
     @FXML
     private StackPane bookInfoContainer;
-    Connection conn;
-    DatabaseHandler databaseHandler;
-    PieChart bookChart;
-    PieChart memberChart;
-
     @FXML
     private TextField bookIdInput;
     @FXML
@@ -75,13 +74,117 @@ public class MainController implements Initializable {
     private Text memberName;
     @FXML
     private StackPane rootPane;
+    @FXML
+    private TableView<Issue> tableView;
+    @FXML
+    private TableColumn<Issue, String> idColumn;
+    @FXML
+    private TableColumn<Issue, String> nameColumn;
+    @FXML
+    private TableColumn<Issue, String> emailColumn;
+    @FXML
+    private TableColumn<Issue, String> bidColumn;
+    @FXML
+    private TableColumn<Issue, String> titleColumn;
+    @FXML
+    private TableColumn<Issue, String> authorColumn;
+    @FXML
+    private TableColumn<Issue, String> issueDateColumn;
+    @FXML
+    private TableColumn<Issue, String> renewColumn;
 
 
-   @Override
+    private void initCol() {
+        issueDateColumn.setCellValueFactory(new PropertyValueFactory<>("issueTime"));
+        renewColumn.setCellValueFactory(new PropertyValueFactory<>("renew_count"));
+        bidColumn.setCellValueFactory(new PropertyValueFactory<>("bookID"));
+        titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+        authorColumn.setCellValueFactory(new PropertyValueFactory<>("author"));
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("memberID"));
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
+
+    }
+
+
+    @FXML
+    private void loadBookInfo2() {
+
+        issueData.clear();
+        DatabaseHandler databaseHandler = DatabaseHandler.getInstance();
+
+        String id = bookID.getText();
+        String mid = memberID.getText();
+        if (!id.isEmpty() && !mid.isEmpty()) {
+
+            String qu = "SELECT * FROM issuedBooks WHERE bookID = '" + id + "' and memberID='" + mid + "'";
+
+            ResultSet rs = databaseHandler.execQuery(qu);
+
+            try {
+                if (!rs.next()) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("ERROR");
+                    alert.setHeaderText(null);
+                    alert.setContentText("The book with ID: " + id + " wasn't issued to member with  ID: " + mid + " !");
+                    alert.showAndWait();
+                    clearOnSubmissionIssueEntries();
+                    return;
+                }
+
+                while (rs.next()) {
+
+                    String mBookID = id;
+                    String mMemberID = mid;
+                    Timestamp mIssueTime = rs.getTimestamp("issueTime");
+                    String issueTime = mIssueTime.toString();
+                    int mRenewCount = rs.getInt("renew_count");
+
+
+                    String query = "SELECT * FROM addBook WHERE id = '" + mBookID + "'";
+                    ResultSet r1 = databaseHandler.execQuery(query);
+
+                    String qu1 = "SELECT * FROM addMember WHERE memberID = '" + mMemberID + "'";
+                    ResultSet r2 = databaseHandler.execQuery(qu1);
+
+                    while (r1.next() && r2.next()) {
+
+                        String title = r1.getString("title");
+                        String author = r1.getString("author");
+                        String name = r2.getString("name");
+                        String email = r2.getString("email");
+
+                        issueData.add(new Issue(issueTime, mRenewCount, mBookID, title, author, mMemberID, name, email));
+
+                    }
+
+                }
+
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+
+            isReadyForSubmission = true;
+            tableView.setItems(issueData);
+
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setHeaderText(null);
+            alert.setContentText("You must select Book ID and Member ID to view the information!");
+            alert.showAndWait();
+            clearOnSubmissionIssueEntries();
+        }
+    }
+
+
+    @Override
     public void initialize(URL rl, ResourceBundle rb) {
         databaseHandler = DatabaseHandler.getInstance();
         initGraph();
-   }
+        initCol();
+    }
+
 
     // Showing the graphs
     private void initGraph() {
@@ -89,23 +192,23 @@ public class MainController implements Initializable {
         bookChart = new PieChart(databaseHandler.getBookGraphicStatistics());
         memberChart = new PieChart(databaseHandler.getMemberGraphicStatistics());
         bookInfoContainer.getChildren().add(bookChart);
-        memberInfoContainer.getChildren().add(memberChart); }
+        memberInfoContainer.getChildren().add(memberChart);
+    }
 
 
-    //Refreshing the graphs
-    public void refreshGraphs(){
+    // Refreshing the graphs
+    public void refreshGraphs() {
         bookChart.setData(databaseHandler.getBookGraphicStatistics());
         memberChart.setData(databaseHandler.getMemberGraphicStatistics());
     }
 
 
-    // Hidding the graphs
-    private void hideShowGraph(Boolean status){
-        if(status){
+    // Hidding/Showing the graphs
+    private void hideShowGraph(Boolean status) {
+        if (status) {
             bookChart.setOpacity(1);
             memberChart.setOpacity(1);
-        }
-        else{
+        } else {
             bookChart.setOpacity(0);
             memberChart.setOpacity(0);
         }
@@ -113,7 +216,6 @@ public class MainController implements Initializable {
 
 
     // Loading the corresponding windows when buttons are clicked
-    // Need to change location to real ones for view members,books,issued books
     @FXML
     private void loadAddMember(javafx.event.ActionEvent actionEvent) {
         loadWindow("/sample/views/addMember.fxml", "Add Member");
@@ -155,6 +257,7 @@ public class MainController implements Initializable {
         }
     }
 
+
     // Loading the book information for issuing books
     @FXML
     private void loadBookInfo(ActionEvent actionEvent) throws SQLException {
@@ -181,7 +284,7 @@ public class MainController implements Initializable {
                 availability.setText(status);
                 flag = true;
             }
-            if (flag==false) {
+            if (flag == false) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Book not found");
                 alert.setHeaderText(null);
@@ -226,7 +329,7 @@ public class MainController implements Initializable {
 
                 flag = true;
             }
-            if (flag==false) {
+            if (flag == false) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Member not found");
                 alert.setHeaderText(null);
@@ -244,6 +347,7 @@ public class MainController implements Initializable {
     void clearMembercache() {
         memberName.setText("");
         contact.setText("");
+
     }
 
     // Handling the menu items at menu bar
@@ -275,13 +379,14 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleViewIssuedBooks(ActionEvent actionEvent) {
-        loadWindow("/sample/views/addMember.fxml", "View Issued Books");
+        loadWindow("/sample/views/issuedBooks.fxml", "View Issued Books");
     }
 
     @FXML
     private void aboutHandler(ActionEvent actionEvent) {
         loadWindow("/sample/views/aboutUs.fxml", "About Us");
     }
+
 
     // A method for loading web pages
     private void loadWebpage(String url) {
@@ -314,7 +419,7 @@ public class MainController implements Initializable {
 
     // Here we handle the issue book functionality
     @FXML
-    private void issueHandler(ActionEvent actionEvent) {
+    private void issueHandler(ActionEvent actionEvent) throws SQLException {
         String memberID = memberIdInput.getText();
         String bookID = bookIdInput.getText();
         String isAvailable = availability.getText();
@@ -333,12 +438,12 @@ public class MainController implements Initializable {
 
             Optional<ButtonType> response = alert.showAndWait();
             if (response.get() == ButtonType.OK) {
-                String query="SELECT memberID,bookID from issuedBooks where memberID='"+memberID+"'" +
-                        "and bookID ='"+bookID+"'";
-                ResultSet result=databaseHandler.execQuery(query);
+                String query = "SELECT memberID,bookID from issuedBooks where memberID='" + memberID + "'" +
+                        "and bookID ='" + bookID + "'";
+                ResultSet result = databaseHandler.execQuery(query);
 
                 try {
-                    if(result.next()){
+                    if (result.next()) {
                         Alert bookIsAlreadyIssuedAlert = new Alert(Alert.AlertType.ERROR);
                         bookIsAlreadyIssuedAlert.setTitle("Duplicate Entry");
                         bookIsAlreadyIssuedAlert.setHeaderText(null);
@@ -368,6 +473,17 @@ public class MainController implements Initializable {
                         alert1.showAndWait();
                         clearIssueEntries();
                         hideShowGraph(true);
+
+                        String query3 = "SELECT quantity from addBook where id='" + bookID + "'";
+                        ResultSet rs = databaseHandler.execQuery(query3);
+                        if (rs.next()) {
+                            int qty = rs.getInt("quantity");
+                            if (qty == 0) {
+                                String query4 = "UPDATE addBook SET  isAvail=false  where id='" + bookID + "'";
+                                databaseHandler.execAction(query4);
+                            }
+                        }
+
                     } else {
                         Alert alert2 = new Alert(Alert.AlertType.ERROR);
                         alert2.setTitle("FAILED");
@@ -377,18 +493,16 @@ public class MainController implements Initializable {
                         clearIssueEntries();
                         hideShowGraph(true);
                     }
+                } else {
+                    Alert alert3 = new Alert(Alert.AlertType.ERROR);
+                    alert3.setTitle("FAILED");
+                    alert3.setHeaderText(null);
+                    alert3.setContentText("This book isn't available!");
+                    alert3.showAndWait();
+                    clearIssueEntries();
+                    hideShowGraph(true);
                 }
-             else {
-                Alert alert3 = new Alert(Alert.AlertType.ERROR);
-                alert3.setTitle("FAILED");
-                alert3.setHeaderText(null);
-                alert3.setContentText("This book isn't available!");
-                alert3.showAndWait();
-                clearIssueEntries();
-                hideShowGraph(true);
-            }
-            }
-         else if (response.get() == ButtonType.CANCEL) {
+            } else if (response.get() == ButtonType.CANCEL) {
                 Alert alert4 = new Alert(Alert.AlertType.INFORMATION);
                 alert4.setTitle("CANCELED");
                 alert4.setHeaderText(null);
@@ -401,9 +515,8 @@ public class MainController implements Initializable {
     }
 
 
-
     // Clearing issue book information
-    private void clearIssueEntries(){
+    private void clearIssueEntries() {
         bookIdInput.clear();
         memberIdInput.clear();
         clearBookcache();
@@ -411,105 +524,17 @@ public class MainController implements Initializable {
     }
 
     // Clearing the info
-    private void clearOnSubmissionIssueEntries(){
+    private void clearOnSubmissionIssueEntries() {
         bookID.clear();
         memberID.clear();
-        issueDataList.getItems().clear();
     }
 
 
     // Submission tab
-
-    boolean isReadyForSubmission=false;
-
-    @FXML
-    private void loadBookInfo2(ActionEvent event) {
-
-        ObservableList<String> issueData = FXCollections.observableArrayList();
-
-        String id = bookID.getText();
-        String mid=memberID.getText();
-        if( !id.isEmpty() && !mid.isEmpty()) {
-
-            String qu = "SELECT * FROM issuedBooks WHERE bookID = '" + id + "' and memberID='" + mid + "'";
-
-            ResultSet rs = databaseHandler.execQuery(qu);
-
-            try {
-                if(!rs.next()){
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("ERROR");
-                    alert.setHeaderText(null);
-                    alert.setContentText("The book with ID: "+ id + " wasn't issued to member with  ID: " + mid +" !");
-                    alert.showAndWait();
-                    clearOnSubmissionIssueEntries();
-                    return;
-                }
-                while (rs.next()) {
-                    String mBookID = id;
-                    String mMemberID = mid;
-                    Timestamp mIssueTime = rs.getTimestamp("issueTime");
-                    int mRenewCount = rs.getInt("renew_count");
-
-
-                    issueData.add("Issue Information:- ");
-
-                    issueData.add("Issue Date and Time: " + mIssueTime.toString());
-                    issueData.add("Renew Count: " + mRenewCount);
-
-                    issueData.add("Book Information:- ");
-
-                    String query = "SELECT * FROM addBook WHERE id = '" + mBookID + "'";
-                    ResultSet r1 = databaseHandler.execQuery(query);
-
-
-                    while (r1.next()) {
-
-                        issueData.add("Book Name: " + r1.getString("title"));
-                        issueData.add("Book ID: " + r1.getString("id"));
-                        issueData.add("Book Author: " + r1.getString("author"));
-                        issueData.add("Book Publisher: " + r1.getString("publisher"));
-                    }
-
-                    String qu1 = "SELECT * FROM addMember WHERE memberID = '" + mMemberID + "'";
-                    ResultSet r2 = databaseHandler.execQuery(qu1);
-                    issueData.add("Member Information:- ");
-
-                    while (r2.next()) {
-
-                        issueData.add("Name: " + r2.getString("name"));
-                        issueData.add("Mobile: " + r2.getString("mobile"));
-                        issueData.add("Email: " + r2.getString("email"));
-                    }
-
-                }
-
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-
-            isReadyForSubmission = true;
-            issueDataList.getItems().setAll(issueData);
-        }
-        else{
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("ERROR");
-            alert.setHeaderText(null);
-            alert.setContentText("You must select Book ID and Member ID to view the information!");
-            alert.showAndWait();
-            clearOnSubmissionIssueEntries();
-        }
-
-    }
-
-
-
-// Submission and renewal
-
     @FXML
     private void loadOnSubmissionOp(ActionEvent event) {
 
-        if (!isReadyForSubmission) {
+        if (isReadyForSubmission == false) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Failed");
             alert.setHeaderText(null);
@@ -517,7 +542,6 @@ public class MainController implements Initializable {
             alert.showAndWait();
             return;
         }
-
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirm Submission Operation");
         alert.setHeaderText(null);
@@ -526,9 +550,10 @@ public class MainController implements Initializable {
         if (response.get() == ButtonType.OK) {
 
             String id = bookID.getText();
-            String mid=memberID.getText();
+            String mid = memberID.getText();
             String ac1 = " DELETE FROM issuedBooks WHERE bookID = '" + id + "' and memberID = '" + mid + "'";
-            String ac2 = "UPDATE addBook SET quantity = quantity-1 WHERE id= '" + id + "'";
+            String ac2 = "UPDATE addBook SET quantity = quantity+1  WHERE id= '" + id + "'";
+
 
             if (databaseHandler.execAction(ac1) && databaseHandler.execAction(ac2)) {
                 Alert confirmAlert = new Alert(Alert.AlertType.INFORMATION);
@@ -537,6 +562,7 @@ public class MainController implements Initializable {
                 confirmAlert.setContentText("Book Has Been Submitted!");
                 confirmAlert.showAndWait();
                 clearOnSubmissionIssueEntries();
+                isReadyForSubmission = false;
             } else {
                 Alert alert1 = new Alert(Alert.AlertType.ERROR);
                 alert1.setTitle("Failed");
@@ -544,21 +570,24 @@ public class MainController implements Initializable {
                 alert1.setContentText("Submission Has Been Failed!");
                 alert1.showAndWait();
                 clearOnSubmissionIssueEntries();
+                isReadyForSubmission = false;
             }
 
-        }else{
-            Alert  canceledAlert = new Alert(Alert.AlertType.INFORMATION);
+        } else {
+            Alert canceledAlert = new Alert(Alert.AlertType.INFORMATION);
             canceledAlert.setTitle("Canceled");
             canceledAlert.setHeaderText(null);
             canceledAlert.setContentText("Submission Operation canceled!");
             canceledAlert.showAndWait();
+            isReadyForSubmission = false;
             clearOnSubmissionIssueEntries();
         }
     }
 
 
+// Renewal
     @FXML
-    private void loadRenewOp(ActionEvent event){
+    private void loadRenewOp(ActionEvent event) {
 
         if (!isReadyForSubmission) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -574,10 +603,10 @@ public class MainController implements Initializable {
         alert1.setHeaderText(null);
         alert1.setContentText("Are you sure you want to renew the book ?");
         Optional<ButtonType> response = alert1.showAndWait();
-        if (response.get() == ButtonType.OK){
-            String ac ="UPDATE issuedBooks SET issueTime = CURRENT_TIMESTAMP,renew_count = renew_count+1 WHERE bookID = '" +bookID.getText() + "'";
+        if (response.get() == ButtonType.OK) {
+            String ac = "UPDATE issuedBooks SET issueTime = CURRENT_TIMESTAMP,renew_count = renew_count+1 WHERE bookID = '" + bookID.getText() + "'";
             System.out.println(ac);
-            if(databaseHandler.execAction(ac)){
+            if (databaseHandler.execAction(ac)) {
 
                 Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
                 alert2.setTitle("Success");
@@ -585,21 +614,25 @@ public class MainController implements Initializable {
                 alert2.setContentText("Book has been renewed!");
                 alert2.showAndWait();
                 clearOnSubmissionIssueEntries();
+                isReadyForSubmission = false;
 
-            }else {
+            } else {
                 Alert alert3 = new Alert(Alert.AlertType.ERROR);
                 alert3.setTitle("Failed");
                 alert3.setHeaderText(null);
                 alert3.setContentText("Renew Has Been Failed!");
                 alert3.showAndWait();
                 clearOnSubmissionIssueEntries();
-            } }else{
+                isReadyForSubmission = false;
+            }
+        } else {
             Alert alert4 = new Alert(Alert.AlertType.INFORMATION);
             alert4.setTitle("Canceled");
             alert4.setHeaderText(null);
             alert4.setContentText("Renew Operation canceled!");
             alert4.showAndWait();
             clearOnSubmissionIssueEntries();
+            isReadyForSubmission = false;
         }
     }
 
@@ -625,28 +658,84 @@ public class MainController implements Initializable {
             ((Stage) rootPane.getScene().getWindow()).close();
             primaryStage.setScene(scene);
             primaryStage.show();
-        } else{
+        } else {
             return;
         }
     }
 
-        // Logging the admin out if he clicks the log out button
-        @FXML
-        private void logoutAction (ActionEvent actionEvent) throws IOException {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Log Out");
-            alert.setHeaderText(null);
-            alert.setContentText("Are you sure you want to Log Out?");
 
-            Optional<ButtonType> response = alert.showAndWait();
-            if (response.get() == ButtonType.OK) {
-                Parent parent = FXMLLoader.load(getClass().getResource("../views/login.fxml"));
-                Scene scene = new Scene(parent);
-                Stage primaryStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-                primaryStage.setScene(scene);
-                primaryStage.show();
-            }
+    // Logging the admin out if he clicks the log out button
+    @FXML
+    private void logoutAction(ActionEvent actionEvent) throws IOException {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Log Out");
+        alert.setHeaderText(null);
+        alert.setContentText("Are you sure you want to Log Out?");
+
+        Optional<ButtonType> response = alert.showAndWait();
+        if (response.get() == ButtonType.OK) {
+            Parent parent = FXMLLoader.load(getClass().getResource("../views/login.fxml"));
+            Scene scene = new Scene(parent);
+            Stage primaryStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            primaryStage.setScene(scene);
+            primaryStage.show();
+        }
+    }
+
+    // Issue Class
+    public static class Issue {
+        private final SimpleStringProperty memberID;
+        private final SimpleStringProperty name;
+        private final SimpleStringProperty email;
+        private final SimpleStringProperty bookID;
+        private final SimpleStringProperty title;
+        private final SimpleStringProperty author;
+        private final SimpleStringProperty issueTime;
+        private final SimpleIntegerProperty renew_count;
+
+
+        public Issue(String issueTime, Integer renew_count, String bookID, String title, String author, String memberID, String name, String email) {
+            this.memberID = new SimpleStringProperty(memberID);
+            this.name = new SimpleStringProperty(name);
+            this.email = new SimpleStringProperty(email);
+            this.bookID = new SimpleStringProperty(bookID);
+            this.title = new SimpleStringProperty(title);
+            this.author = new SimpleStringProperty(author);
+            this.issueTime = new SimpleStringProperty(issueTime);
+            this.renew_count = new SimpleIntegerProperty(renew_count);
         }
 
+        public String getMemberID() {
+            return memberID.get();
+        }
+
+        public String getName() {
+            return name.get();
+        }
+
+        public String getEmail() {
+            return email.get();
+        }
+
+        public String getBookID() {
+            return bookID.get();
+        }
+
+        public String getTitle() {
+            return title.get();
+        }
+
+        public String getAuthor() {
+            return author.get();
+        }
+
+        public String getIssueTime() {
+            return issueTime.get();
+        }
+
+        public Integer getRenew_count() {
+            return renew_count.get();
+        }
+    }
 
 }
